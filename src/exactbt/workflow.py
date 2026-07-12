@@ -1,14 +1,13 @@
-"""
-End-to-end exact parameter-search workflow.
+"""End-to-end exact parameter-search workflow.
 
 Workflow responsibilities are orchestration only:
 1. load and validate Parquet data;
 2. enumerate every enabled strategy config deterministically;
-3. run the same exact Numba kernel in configurable batches;
-4. checkpoint each batch atomically and resume completed work;
-5. retain all exact metrics, passing configs, near-threshold configs, and the
-   best configs from every strategy family;
-6. rerun selected configs in record mode and verify metric parity.
+3. optionally restrict a non-TRAIN run to a frozen TRAIN shortlist;
+4. run the same exact Numba kernel in configurable batches;
+5. checkpoint each batch atomically and resume completed work;
+6. retain all exact metrics and sample-eligible diagnostics;
+7. rerun selected configs in record mode and verify metric parity.
 
 No approximate screening engine or heuristic early rejection is used.
 """
@@ -23,7 +22,6 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-import yaml
 from numba import get_num_threads, set_num_threads
 
 from .config import LoadedConfig
@@ -56,21 +54,27 @@ def _resolve_project_path(config: LoadedConfig, value: str) -> Path:
     return (config.path.parent.parent / candidate).resolve()
 
 
-def _selection_mask(frame: pd.DataFrame, selection: dict[str, Any]) -> pd.Series:
-    threshold = float(selection.get("min_expectancy_r", 0.15))
-    strict = bool(selection.get("strict_expectancy", True))
-    mask = frame["expectancy_R"] > threshold if strict else frame["expectancy_R"] >= threshold
-    mask &= frame["trades"] >= int(selection.get("min_trades", 0))
-
+def _non_expectancy_mask(frame: pd.DataFrame, selection: dict[str, Any]) -> pd.Series:
+    """Apply sample-size and optional risk gates, but not expectancy."""
+    mask = frame["trades"] >= int(selection.get("min_trades", 0))
     min_pf = selection.get("min_profit_factor")
     if min_pf is not None:
         mask &= frame["profit_factor_R"] >= float(min_pf)
-
     max_dd = selection.get("max_drawdown_r")
     if max_dd is not None:
         mask &= frame["max_drawdown_R"] <= float(max_dd)
-
     return mask
+
+
+def _selection_mask(frame: pd.DataFrame, selection: dict[str, Any]) -> pd.Series:
+    threshold = float(selection.get("min_expectancy_r", 0.15))
+    strict = bool(selection.get("strict_expectancy", True))
+    expectancy_mask = (
+        frame["expectancy_R"] > threshold
+        if strict
+        else frame["expectancy_R"] >= threshold
+    )
+    return _non_expectancy_mask(frame, selection) & expectancy_mask
 
 
 def _sort_results(frame: pd.DataFrame) -> pd.DataFrame:
@@ -97,6 +101,42 @@ def _extract_common_arrays(configs: list[dict[str, Any]]) -> tuple[np.ndarray, n
     return rr, max_hold
 
 
+def _load_shortlist(
+    loaded: LoadedConfig,
+    search_config: dict[str, Any],
+) -> tuple[Path | None, set[tuple[str, str]] | None, str | None]:
+    """Load a frozen TRAIN shortlist keyed by strategy name and parameters."""
+    value = search_config.get("shortlist_file")
+    if value in (None, "", False):
+        return None, None, None
+
+    path = _resolve_project_path(loaded, str(value))
+    if not path.exists():
+        raise FileNotFoundError(f"Shortlist file not found: {path}")
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    entries = payload.get("configs") if isinstance(payload, dict) else payload
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("Shortlist must contain a non-empty 'configs' list.")
+
+    allowed: set[tuple[str, str]] = set()
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            raise ValueError(f"Shortlist entry {index} must be an object.")
+        strategy = entry.get("strategy")
+        parameters = entry.get("parameters")
+        if not isinstance(strategy, str) or not isinstance(parameters, dict):
+            raise ValueError(
+                f"Shortlist entry {index} requires string 'strategy' and object 'parameters'."
+            )
+        key = (strategy, stable_json(parameters))
+        if key in allowed:
+            raise ValueError(f"Duplicate shortlist entry: {strategy} {parameters}")
+        allowed.add(key)
+
+    return path, allowed, sha256_file(path)
+
+
 def run_search(
     loaded: LoadedConfig,
     *,
@@ -112,6 +152,9 @@ def run_search(
     split_name = split_name or str(data_config.get("active_split", "train"))
     data_path = _resolve_project_path(loaded, str(data_config["file"]))
     output_root = _resolve_project_path(loaded, str(search_config.get("output_dir", "results")))
+    shortlist_path, shortlist_allowed, shortlist_sha256 = _load_shortlist(loaded, search_config)
+    if shortlist_allowed is not None and split_name == "train":
+        raise ValueError("A frozen shortlist must not be used to search TRAIN.")
 
     requested_threads = int(search_config.get("num_threads", 0))
     if requested_threads > 0:
@@ -129,6 +172,7 @@ def run_search(
         "split_name": split_name,
         "split": split_definition,
         "dataset_sha256": dataset_sha256,
+        "shortlist_sha256": shortlist_sha256,
     }
     run_id = f"{split_name}_{stable_hash(manifest_basis)[:12]}"
     run_dir = output_root / run_id
@@ -145,9 +189,13 @@ def run_search(
         "data_start": str(candles.frame["datetime"].iloc[0]),
         "data_end": str(candles.frame["datetime"].iloc[-1]),
         "numba_threads": get_num_threads(),
+        "shortlist_file": None if shortlist_path is None else str(shortlist_path),
+        "shortlist_configs": 0 if shortlist_allowed is None else len(shortlist_allowed),
     }
     atomic_write_json(manifest, run_dir / "manifest.json")
     shutil.copy2(loaded.path, run_dir / "run_config.yaml")
+    if shortlist_path is not None:
+        shutil.copy2(shortlist_path, run_dir / "frozen_shortlist.json")
 
     fee_per_side = float(engine_config.get("fee_per_side", 0.0005))
     slippage_per_side = float(engine_config.get("slippage_per_side", 0.0002))
@@ -156,8 +204,7 @@ def run_search(
 
     runtimes: dict[str, StrategyRuntime] = {}
     batch_files: list[Path] = []
-    # Reuse compiled kernels when many plugins share the same stateless signal
-    # adapter. This avoids compiling identical Numba execution loops 15 times.
+    matched_shortlist: set[tuple[str, str]] = set()
     kernel_cache: dict[tuple[int, int, int, int], CompiledKernel] = {}
 
     for strategy_entry in raw["strategies"]:
@@ -167,6 +214,15 @@ def run_search(
         plugin_path = str(strategy_entry["plugin"])
         plugin = load_strategy_plugin(plugin_path)
         configs = plugin.expand_grid(strategy_entry.get("parameters", {}))
+        if shortlist_allowed is not None:
+            selected_configs: list[dict[str, Any]] = []
+            for config in configs:
+                key = (plugin.name, stable_json(config))
+                if key in shortlist_allowed:
+                    selected_configs.append(config)
+                    matched_shortlist.add(key)
+            configs = selected_configs
+
         if not configs:
             print(f"Skipping empty strategy grid: {plugin.name}")
             continue
@@ -260,6 +316,14 @@ def run_search(
             )
             atomic_write_parquet(result, checkpoint)
 
+    if shortlist_allowed is not None:
+        missing = shortlist_allowed - matched_shortlist
+        if missing:
+            examples = sorted(missing)[:5]
+            raise ValueError(
+                f"{len(missing)} shortlist configs were not found in enabled grids. Examples: {examples}"
+            )
+
     existing_batches = [path for path in batch_files if path.exists()]
     if not existing_batches:
         raise RuntimeError("No strategy batches were produced.")
@@ -271,6 +335,10 @@ def run_search(
     all_results = _sort_results(all_results)
     atomic_write_parquet(all_results, run_dir / "all_results.parquet")
 
+    eligible_mask = _non_expectancy_mask(all_results, selection_config)
+    eligible = _sort_results(all_results.loc[eligible_mask].copy())
+    atomic_write_parquet(eligible, run_dir / "eligible_results.parquet")
+
     passing = _sort_results(all_results.loc[_selection_mask(all_results, selection_config)].copy())
     atomic_write_parquet(passing, run_dir / "passing_results.parquet")
 
@@ -278,21 +346,25 @@ def run_search(
     margin = float(selection_config.get("near_threshold_margin_r", 0.03))
     near = _sort_results(
         all_results.loc[
-            (all_results["expectancy_R"] <= threshold)
+            eligible_mask
+            & (all_results["expectancy_R"] <= threshold)
             & (all_results["expectancy_R"] >= threshold - margin)
         ].copy()
     )
     atomic_write_parquet(near, run_dir / "near_threshold_results.parquet")
 
     best_per_strategy = int(selection_config.get("keep_best_per_strategy", 20))
-    family_best = _sort_results(
+    family_best_raw = _sort_results(
         all_results.groupby("strategy", group_keys=False).head(best_per_strategy).copy()
     )
-    atomic_write_parquet(family_best, run_dir / "family_best_results.parquet")
+    atomic_write_parquet(family_best_raw, run_dir / "family_best_results.parquet")
 
-    # Detailed records are not needed to decide whether a config passed; every
-    # config already has exact metrics. This rerun is only for diagnosis/reporting.
-    detailed_candidates = pd.concat([passing, family_best, near], ignore_index=True)
+    family_best_eligible = _sort_results(
+        eligible.groupby("strategy", group_keys=False).head(best_per_strategy).copy()
+    )
+    atomic_write_parquet(family_best_eligible, run_dir / "family_best_eligible_results.parquet")
+
+    detailed_candidates = pd.concat([passing, family_best_eligible, near], ignore_index=True)
     detailed_candidates = _sort_results(detailed_candidates.drop_duplicates("config_id"))
     detailed_limit = int(selection_config.get("detailed_records_max", 100))
     if detailed_limit > 0:
@@ -350,8 +422,10 @@ def run_search(
 
     record_metrics = pd.DataFrame(record_metric_rows)
     atomic_write_parquet(record_metrics, run_dir / "record_mode_metrics.parquet")
-    write_summary(run_dir, manifest, all_results, passing, near)
+    write_summary(run_dir, manifest, all_results, eligible, passing, near)
 
     print(f"Completed exact search: {run_dir}")
-    print(f"Exact configs: {len(all_results):,}; passing: {len(passing):,}")
+    print(
+        f"Exact configs: {len(all_results):,}; eligible: {len(eligible):,}; passing: {len(passing):,}"
+    )
     return run_dir
