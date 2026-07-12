@@ -54,15 +54,36 @@ def _resolve_project_path(config: LoadedConfig, value: str) -> Path:
     return (config.path.parent.parent / candidate).resolve()
 
 
+def _effective_selection(selection: dict[str, Any], split_name: str) -> dict[str, Any]:
+    """Merge predeclared split-specific gates into the common selection rules."""
+    effective = {key: value for key, value in selection.items() if key != "by_split"}
+    overrides = selection.get("by_split", {})
+    if overrides is not None:
+        if not isinstance(overrides, dict):
+            raise ValueError("selection.by_split must be a mapping.")
+        split_override = overrides.get(split_name, {})
+        if not isinstance(split_override, dict):
+            raise ValueError(f"selection.by_split.{split_name} must be a mapping.")
+        effective.update(split_override)
+    return effective
+
+
 def _non_expectancy_mask(frame: pd.DataFrame, selection: dict[str, Any]) -> pd.Series:
     """Apply sample-size and optional risk gates, but not expectancy."""
     mask = frame["trades"] >= int(selection.get("min_trades", 0))
+
     min_pf = selection.get("min_profit_factor")
     if min_pf is not None:
         mask &= frame["profit_factor_R"] >= float(min_pf)
+
     max_dd = selection.get("max_drawdown_r")
     if max_dd is not None:
         mask &= frame["max_drawdown_R"] <= float(max_dd)
+
+    max_cost_share = selection.get("max_cost_share_of_gross_wins")
+    if max_cost_share is not None:
+        mask &= frame["cost_share_of_gross_wins"] <= float(max_cost_share)
+
     return mask
 
 
@@ -147,12 +168,15 @@ def run_search(
     data_config = raw["data"]
     engine_config = raw["engine"]
     search_config = raw["search"]
-    selection_config = raw["selection"]
+    selection_root = raw["selection"]
 
     split_name = split_name or str(data_config.get("active_split", "train"))
+    selection_config = _effective_selection(selection_root, split_name)
     data_path = _resolve_project_path(loaded, str(data_config["file"]))
     output_root = _resolve_project_path(loaded, str(search_config.get("output_dir", "results")))
-    shortlist_path, shortlist_allowed, shortlist_sha256 = _load_shortlist(loaded, search_config)
+    shortlist_path, shortlist_allowed, shortlist_sha256 = _load_shortlist(
+        loaded, search_config
+    )
     if shortlist_allowed is not None and split_name == "train":
         raise ValueError("A frozen shortlist must not be used to search TRAIN.")
 
@@ -191,6 +215,7 @@ def run_search(
         "numba_threads": get_num_threads(),
         "shortlist_file": None if shortlist_path is None else str(shortlist_path),
         "shortlist_configs": 0 if shortlist_allowed is None else len(shortlist_allowed),
+        "effective_selection": selection_config,
     }
     atomic_write_json(manifest, run_dir / "manifest.json")
     shutil.copy2(loaded.path, run_dir / "run_config.yaml")
