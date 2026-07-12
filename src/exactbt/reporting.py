@@ -47,7 +47,7 @@ def write_summary(
 ) -> None:
     raw_best = _row_dict(all_results)
     eligible_best = _row_dict(eligible)
-    selection = manifest["config"]["selection"]
+    selection = manifest.get("effective_selection", manifest["config"]["selection"])
     min_trades = int(selection.get("min_trades", 0))
 
     payload = {
