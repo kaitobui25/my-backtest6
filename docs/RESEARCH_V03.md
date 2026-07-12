@@ -87,7 +87,9 @@ Run only those frozen parameters:
 ```
 
 The workflow rejects a shortlist on TRAIN and records the shortlist SHA-256 in
-the run manifest.
+the run manifest. Split-specific gates are predeclared in the YAML: TRAIN uses
+300 trades, PF 1.30 and expectancy above 0.15R; VALIDATION uses 80 trades, PF
+1.15 and positive expectancy. Do not edit these after seeing VALIDATION.
 
 ## Decision rule
 
