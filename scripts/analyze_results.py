@@ -35,6 +35,9 @@ def _gate_mask(frame: pd.DataFrame, selection: dict[str, Any]) -> pd.Series:
     max_dd = selection.get("max_drawdown_r")
     if max_dd is not None:
         mask &= frame["max_drawdown_R"] <= float(max_dd)
+    max_cost_share = selection.get("max_cost_share_of_gross_wins")
+    if max_cost_share is not None:
+        mask &= frame["cost_share_of_gross_wins"] <= float(max_cost_share)
     return mask
 
 
@@ -67,7 +70,8 @@ def analyze(run_dir: Path, top: int) -> Path:
 
     frame = _sort(pd.read_parquet(all_path))
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
-    selection = summary["manifest"]["config"]["selection"]
+    manifest = summary["manifest"]
+    selection = manifest.get("effective_selection", manifest["config"]["selection"])
     threshold = float(selection.get("min_expectancy_r", 0.15))
     margin = float(selection.get("near_threshold_margin_r", 0.03))
     strict = bool(selection.get("strict_expectancy", True))
