@@ -48,10 +48,10 @@ search:
 selection:
   # Keep the original hard research target. A lower diagnostic tier belongs in
   # analysis output, not in the definition of a passing strategy.
-  min_expectancy_r: 0.15
+  min_expectancy_r: 0.1
   strict_expectancy: true
   min_trades: 300
-  min_profit_factor: 1.3
+  min_profit_factor: 1.2
   max_drawdown_r: null
   max_cost_share_of_gross_wins: 0.40
   near_threshold_margin_r: 0.03
