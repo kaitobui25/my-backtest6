@@ -1,0 +1,5 @@
+strategy,configs,configs_with_trades,eligible_configs,positive_net_active_configs,positive_gross_active_configs,best_raw_expectancy_R,best_raw_trades,best_eligible_expectancy_R,best_eligible_gross_expectancy_R,best_eligible_avg_cost_R,best_eligible_profit_factor_R,best_eligible_max_drawdown_R,best_eligible_trades,median_active_expectancy_R,median_active_cost_R
+rolling_sweep_reclaim,3456,3456,0,176,1256,0.30317073424706364,22.0,,,,,,,-0.2907872556877432,0.2804198307951065
+rolling_range_breakout,3888,3888,0,562,2544,0.20432353200267456,158.0,,,,,,,-0.08811391444359348,0.11445302972826994
+adx_ema_pullback,1152,1152,0,4,550,0.024643146884710098,115.0,,,,,,,-0.18199473204900835,0.17609241389463282
+daily_vwap_reclaim,1728,1728,0,0,139,-0.13253392410494222,619.0,,,,,,,-0.2585890407962423,0.20391455450372775
