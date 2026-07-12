@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - research/exactbt-v03
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -112,7 +115,6 @@ jobs:
           )
           family.to_csv(out / 'strategy_diagnostics.csv', index=False)
 
-          # Parameter sensitivity, only among configurations with at least 100 trades.
           sensitivity_rows = []
           for strategy, g in enough_100.groupby('strategy'):
               for col in param_cols:
