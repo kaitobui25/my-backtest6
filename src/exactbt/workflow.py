@@ -420,7 +420,10 @@ def run_search(
             }
         )
 
-    record_metrics = pd.DataFrame(record_metric_rows)
+    record_metrics = pd.DataFrame(
+        record_metric_rows,
+        columns=["strategy", "config_id", "parameters_json", *METRIC_NAMES],
+    )
     atomic_write_parquet(record_metrics, run_dir / "record_mode_metrics.parquet")
     write_summary(run_dir, manifest, all_results, eligible, passing, near)
 
