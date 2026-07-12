@@ -4,6 +4,8 @@ __pycache__/
 .pytest_cache/
 .numba_cache/
 data/*.parquet
-results/
+#results/
 
 src/exact_batch_backtester.egg-info/
+results/train_7991d522a22e/batches/
+results/train_7991d522a22e/trades/

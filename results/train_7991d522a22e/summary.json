@@ -1,0 +1,891 @@
+{
+  "manifest": {
+    "engine_version": "exactbt-single-kernel-v1",
+    "config": {
+      "simple_strategy_execution": {
+        "atr_stop_window": [
+          14,
+          21
+        ],
+        "atr_stop_multiplier": [
+          1.0,
+          1.5,
+          2.0
+        ],
+        "risk_reward": [
+          1.5,
+          2.0,
+          2.5
+        ],
+        "max_hold_bars": [
+          0,
+          96
+        ],
+        "side": [
+          "both"
+        ]
+      },
+      "data": {
+        "file": "data/btcusdt_15m.parquet",
+        "timestamp_column": "auto",
+        "active_split": "train",
+        "splits": {
+          "train": {
+            "start": "2021-01-01T00:00:00Z",
+            "end": "2024-07-01T00:00:00Z",
+            "locked": false
+          },
+          "validation": {
+            "start": "2024-07-01T00:00:00Z",
+            "end": "2025-07-01T00:00:00Z",
+            "locked": false
+          },
+          "final_oos": {
+            "start": "2025-07-01T00:00:00Z",
+            "end": "2026-07-01T00:00:00Z",
+            "locked": true
+          }
+        }
+      },
+      "engine": {
+        "fee_per_side": 0.0005,
+        "slippage_per_side": 0.0002,
+        "cancel_pending_on_new_day": true
+      },
+      "search": {
+        "output_dir": "results",
+        "batch_size": 48,
+        "num_threads": 0
+      },
+      "selection": {
+        "min_expectancy_r": 0.15,
+        "strict_expectancy": true,
+        "min_trades": 300,
+        "min_profit_factor": null,
+        "max_drawdown_r": null,
+        "near_threshold_margin_r": 0.03,
+        "keep_best_per_strategy": 20,
+        "detailed_records_max": 100
+      },
+      "strategies": [
+        {
+          "plugin": "exactbt.strategies.liquidity_sweep:PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "sweep_buffer_ratio": [
+              0.0,
+              0.00025,
+              0.0005,
+              0.00075,
+              0.001
+            ],
+            "reclaim_buffer_ratio": [
+              0.0,
+              0.00025,
+              0.0005
+            ],
+            "max_wait_candles": [
+              1,
+              2,
+              3,
+              4,
+              6,
+              8
+            ],
+            "stop_buffer_ratio": [
+              0.0,
+              0.0001,
+              0.0002,
+              0.0003
+            ],
+            "risk_reward": {
+              "start": 1.0,
+              "stop": 3.0,
+              "step": 0.25
+            },
+            "max_hold_bars": 0
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.donchian_ema_atr:PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "donchian_window": [
+              20,
+              40,
+              60,
+              96
+            ],
+            "ema_window": [
+              50,
+              100,
+              200
+            ],
+            "atr_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.mean_reversion:BOLLINGER_REENTRY_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "window": [
+              20,
+              30,
+              40
+            ],
+            "std_mult": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "regime_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.mean_reversion:BOLLINGER_FADE_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "window": [
+              20,
+              30,
+              40
+            ],
+            "std_mult": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "regime_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.mean_reversion:ZSCORE_REVERSION_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "window": [
+              20,
+              40,
+              60,
+              96
+            ],
+            "zscore_threshold": [
+              1.0,
+              1.5,
+              2.0,
+              2.5
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.mean_reversion:RSI_EXTREME_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "rsi_window": [
+              7,
+              14,
+              21
+            ],
+            "level": [
+              20,
+              25,
+              30
+            ],
+            "regime_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.momentum:RSI_MOMENTUM_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "rsi_window": [
+              7,
+              14,
+              21
+            ],
+            "threshold": [
+              55,
+              60,
+              65
+            ],
+            "regime_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.momentum:ROC_MOMENTUM_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "roc_window": [
+              3,
+              6,
+              12,
+              24
+            ],
+            "threshold": [
+              0.25,
+              0.5,
+              1.0,
+              1.5
+            ],
+            "regime_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.momentum:MACD_MOMENTUM_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "fast": [
+              8,
+              12
+            ],
+            "slow": [
+              21,
+              26,
+              35
+            ],
+            "signal": [
+              5,
+              9
+            ],
+            "regime_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.trend:DONCHIAN_BREAKOUT_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "lookback": [
+              20,
+              40,
+              60,
+              96
+            ],
+            "regime_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.trend:ROLLING_RANGE_BREAKOUT_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "lookback": [
+              20,
+              40,
+              60,
+              96
+            ],
+            "atr_window": [
+              14,
+              21
+            ],
+            "breakout_atr_buffer": [
+              0.0,
+              0.25,
+              0.5,
+              1.0
+            ],
+            "regime_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.trend:EMA_CROSS_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "fast_ema": [
+              10,
+              20,
+              50
+            ],
+            "slow_ema": [
+              50,
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.trend:EMA_SLOPE_PULLBACK_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "ema_window": [
+              50,
+              100,
+              200
+            ],
+            "slope_lookback": [
+              3,
+              6,
+              12
+            ],
+            "atr_window": [
+              14,
+              21
+            ],
+            "pullback_atr": [
+              0.25,
+              0.5,
+              1.0
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.volatility:ATR_EXPANSION_BREAKOUT_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "atr_window": [
+              14,
+              21
+            ],
+            "atr_mean_window": [
+              50,
+              100
+            ],
+            "expansion_mult": [
+              1.1,
+              1.25,
+              1.5
+            ],
+            "lookback": [
+              20,
+              40,
+              60
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.volatility:SQUEEZE_BREAKOUT_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "bb_window": [
+              20,
+              30
+            ],
+            "std_mult": [
+              1.5,
+              2.0
+            ],
+            "bandwidth_lookback": [
+              100,
+              200
+            ],
+            "quantile": [
+              0.1,
+              0.2
+            ],
+            "squeeze_memory": [
+              3,
+              6
+            ],
+            "breakout_lookback": [
+              20,
+              40
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.volume:BREAKOUT_VOLUME_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "volume_window": [
+              20,
+              50,
+              100
+            ],
+            "volume_mult": [
+              1.2,
+              1.5,
+              2.0
+            ],
+            "lookback": [
+              20,
+              40,
+              60
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.volume:MOMENTUM_VOLUME_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "risk_reward": [
+              1.5,
+              2.0,
+              2.5
+            ],
+            "max_hold_bars": [
+              0,
+              96
+            ],
+            "side": [
+              "both"
+            ],
+            "roc_window": [
+              3,
+              6,
+              12
+            ],
+            "threshold": [
+              0.25,
+              0.5,
+              1.0
+            ],
+            "volume_window": [
+              20,
+              50
+            ],
+            "volume_mult": [
+              1.2,
+              1.5,
+              2.0
+            ]
+          }
+        }
+      ]
+    },
+    "split_name": "train",
+    "split": {
+      "start": "2021-01-01T00:00:00Z",
+      "end": "2024-07-01T00:00:00Z",
+      "locked": false
+    },
+    "dataset_sha256": "0f50f4f74fa0efd86c92f27829379b5215750e7b5284d60e7fb7ce1784d0dcbc",
+    "run_id": "train_7991d522a22e",
+    "data_file": "C:\\phong\\AI\\finance\\my-backtest6\\exact_batch_backtester_v0.2.0_all_strategies\\data\\btcusdt_15m.parquet",
+    "candles": 122592,
+    "data_start": "2021-01-01 00:00:00+00:00",
+    "data_end": "2024-06-30 23:45:00+00:00",
+    "numba_threads": 22
+  },
+  "total_configs": 23796,
+  "passing_configs": 0,
+  "near_threshold_configs": 18,
+  "best_config": {
+    "strategy": "ema_slope_pullback",
+    "strategy_version": "1",
+    "config_id": "095be0aaecf999edd0aeb90c",
+    "parameters_json": "{\"atr_stop_multiplier\":2.0,\"atr_stop_window\":14,\"atr_window\":14,\"ema_window\":50,\"max_hold_bars\":0,\"pullback_atr\":0.5,\"risk_reward\":2.5,\"side\":\"both\",\"slope_lookback\":3}",
+    "trades": 1.0,
+    "wins": 1.0,
+    "losses": 0.0,
+    "draws": 0.0,
+    "gross_wins": 1.0,
+    "gross_losses": 0.0,
+    "long_trades": 0.0,
+    "short_trades": 1.0,
+    "signals": 1.0,
+    "invalid_entries": 0.0,
+    "pending_cancelled_new_day": 0.0,
+    "gross_R_total": 2.5,
+    "cost_R_total": 0.20890986861285774,
+    "net_R_total": 2.291090131387142,
+    "expectancy_R": 2.291090131387142,
+    "gross_expectancy_R": 2.5,
+    "avg_cost_R": 0.20890986861285774,
+    "gross_win_rate": 1.0,
+    "avg_gross_win_R": 2.5,
+    "avg_gross_loss_R": 0.0,
+    "win_rate": 1.0,
+    "avg_win_R": 2.291090131387142,
+    "avg_loss_R": 0.0,
+    "profit_factor_R": Infinity,
+    "max_drawdown_R": 0.0,
+    "stop_loss_count": 0.0,
+    "take_profit_count": 1.0,
+    "both_hit_count": 0.0,
+    "stop_gap_count": 0.0,
+    "max_hold_count": 0.0,
+    "end_of_data_count": 0.0,
+    "param_max_hold_bars": 0,
+    "param_max_wait_candles": NaN,
+    "param_reclaim_buffer_ratio": NaN,
+    "param_risk_reward": 2.5,
+    "param_stop_buffer_ratio": NaN,
+    "param_sweep_buffer_ratio": NaN,
+    "cost_share_of_gross_wins": 0.08356394744514309,
+    "param_atr_stop_multiplier": 2.0,
+    "param_atr_window": 14.0,
+    "param_donchian_window": NaN,
+    "param_ema_window": 50.0,
+    "param_side": "both",
+    "param_atr_stop_window": 14.0,
+    "param_regime_ema": NaN,
+    "param_std_mult": NaN,
+    "param_window": NaN,
+    "param_zscore_threshold": NaN,
+    "param_level": NaN,
+    "param_rsi_window": NaN,
+    "param_threshold": NaN,
+    "param_roc_window": NaN,
+    "param_fast": NaN,
+    "param_signal": NaN,
+    "param_slow": NaN,
+    "param_lookback": NaN,
+    "param_breakout_atr_buffer": NaN,
+    "param_fast_ema": NaN,
+    "param_slow_ema": NaN,
+    "param_pullback_atr": 0.5,
+    "param_slope_lookback": 3.0,
+    "param_atr_mean_window": NaN,
+    "param_expansion_mult": NaN,
+    "param_bandwidth_lookback": NaN,
+    "param_bb_window": NaN,
+    "param_breakout_lookback": NaN,
+    "param_quantile": NaN,
+    "param_squeeze_memory": NaN,
+    "param_volume_mult": NaN,
+    "param_volume_window": NaN
+  }
+}
