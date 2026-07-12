@@ -38,11 +38,24 @@ selection:
   min_expectancy_r: 0.15
   strict_expectancy: true
   min_trades: 300
-  min_profit_factor: null
+  min_profit_factor: 1.3
   max_drawdown_r: null
+  max_cost_share_of_gross_wins: 0.40
   near_threshold_margin_r: 0.03
   keep_best_per_strategy: 20
   detailed_records_max: 150
+  # These gates are fixed before viewing later splits.
+  by_split:
+    validation:
+      min_expectancy_r: 0.0
+      strict_expectancy: true
+      min_trades: 80
+      min_profit_factor: 1.15
+    final_oos:
+      min_expectancy_r: 0.0
+      strict_expectancy: true
+      min_trades: 80
+      min_profit_factor: 1.15
 
 strategies:
   # Trend continuation after a real pullback and strength confirmation.
