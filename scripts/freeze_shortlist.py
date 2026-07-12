@@ -27,6 +27,9 @@ def _gate_mask(frame: pd.DataFrame, selection: dict[str, Any]) -> pd.Series:
     max_dd = selection.get("max_drawdown_r")
     if max_dd is not None:
         mask &= frame["max_drawdown_R"] <= float(max_dd)
+    max_cost_share = selection.get("max_cost_share_of_gross_wins")
+    if max_cost_share is not None:
+        mask &= frame["cost_share_of_gross_wins"] <= float(max_cost_share)
     return mask
 
 
@@ -53,7 +56,7 @@ def main() -> None:
     if manifest.get("split_name") != "train":
         raise ValueError("Shortlists must be frozen from TRAIN only.")
 
-    selection = manifest["config"]["selection"]
+    selection = manifest.get("effective_selection", manifest["config"]["selection"])
     threshold = (
         float(selection.get("min_expectancy_r", 0.15))
         if args.min_expectancy is None
