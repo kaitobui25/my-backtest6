@@ -1,0 +1,288 @@
+{
+  "engine_version": "exactbt-single-kernel-v1",
+  "config": {
+    "breakout_execution": {
+      "atr_stop_window": [
+        14
+      ],
+      "atr_stop_multiplier": [
+        3.0,
+        4.0
+      ],
+      "risk_reward": [
+        2.0,
+        3.0,
+        4.0
+      ],
+      "max_hold_bars": [
+        192,
+        384
+      ],
+      "side": [
+        "both",
+        "long",
+        "short"
+      ]
+    },
+    "data": {
+      "file": "../data/btc/h2/BTCUSD_H2_20200101_20260622_binance_futures.parquet",
+      "timestamp_column": "auto",
+      "active_split": "train",
+      "splits": {
+        "train": {
+          "start": "2021-01-01T00:00:00Z",
+          "end": "2024-07-01T00:00:00Z",
+          "locked": false
+        },
+        "validation": {
+          "start": "2024-07-01T00:00:00Z",
+          "end": "2025-07-01T00:00:00Z",
+          "locked": false
+        },
+        "final_oos": {
+          "start": "2025-07-01T00:00:00Z",
+          "end": "2026-07-01T00:00:00Z",
+          "locked": true
+        }
+      }
+    },
+    "engine": {
+      "fee_per_side": 0.0005,
+      "slippage_per_side": 0.0002,
+      "cancel_pending_on_new_day": true
+    },
+    "search": {
+      "output_dir": "../results/v0.6_timeframes/h2",
+      "batch_size": 48,
+      "num_threads": 0,
+      "shortlist_file": null
+    },
+    "selection": {
+      "min_expectancy_r": 0.1,
+      "strict_expectancy": true,
+      "min_trades": 40,
+      "min_profit_factor": 1.15,
+      "max_drawdown_r": null,
+      "max_cost_share_of_gross_wins": 0.4,
+      "near_threshold_margin_r": 0.03,
+      "keep_best_per_strategy": 20,
+      "detailed_records_max": 150,
+      "by_split": {
+        "validation": {
+          "min_expectancy_r": 0.1,
+          "strict_expectancy": true,
+          "min_trades": 10,
+          "min_profit_factor": 1.15
+        },
+        "final_oos": {
+          "min_expectancy_r": 0.1,
+          "strict_expectancy": true,
+          "min_trades": 10,
+          "min_profit_factor": 1.15
+        }
+      }
+    },
+    "strategies": [
+      {
+        "plugin": "exactbt.strategies.trend:DONCHIAN_BREAKOUT_PLUGIN",
+        "enabled": true,
+        "parameters": {
+          "atr_stop_window": [
+            14
+          ],
+          "atr_stop_multiplier": [
+            3.0,
+            4.0
+          ],
+          "risk_reward": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max_hold_bars": [
+            192,
+            384
+          ],
+          "side": [
+            "both",
+            "long",
+            "short"
+          ],
+          "lookback": [
+            48,
+            96,
+            192,
+            384
+          ],
+          "regime_ema": [
+            100,
+            200
+          ]
+        }
+      },
+      {
+        "plugin": "exactbt.strategies.donchian_ema_atr:PLUGIN",
+        "enabled": true,
+        "parameters": {
+          "donchian_window": [
+            48,
+            96,
+            192,
+            384
+          ],
+          "ema_window": [
+            100,
+            200
+          ],
+          "atr_window": [
+            14,
+            21
+          ],
+          "atr_stop_multiplier": [
+            3.0,
+            4.0
+          ],
+          "risk_reward": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max_hold_bars": [
+            192,
+            384
+          ],
+          "side": [
+            "both",
+            "long",
+            "short"
+          ]
+        }
+      },
+      {
+        "plugin": "exactbt.strategies.volatility:ATR_EXPANSION_BREAKOUT_PLUGIN",
+        "enabled": true,
+        "parameters": {
+          "atr_stop_window": [
+            14
+          ],
+          "atr_stop_multiplier": [
+            3.0,
+            4.0
+          ],
+          "risk_reward": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max_hold_bars": [
+            192,
+            384
+          ],
+          "side": [
+            "both",
+            "long",
+            "short"
+          ],
+          "atr_window": [
+            14,
+            21
+          ],
+          "atr_mean_window": [
+            50,
+            100
+          ],
+          "expansion_mult": [
+            1.1,
+            1.25,
+            1.5
+          ],
+          "lookback": [
+            48,
+            96,
+            192,
+            384
+          ]
+        }
+      },
+      {
+        "plugin": "exactbt.strategies.volatility:SQUEEZE_BREAKOUT_PLUGIN",
+        "enabled": true,
+        "parameters": {
+          "atr_stop_window": [
+            14
+          ],
+          "atr_stop_multiplier": [
+            3.0,
+            4.0
+          ],
+          "risk_reward": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max_hold_bars": [
+            192,
+            384
+          ],
+          "side": [
+            "both",
+            "long",
+            "short"
+          ],
+          "bb_window": [
+            20,
+            40
+          ],
+          "std_mult": [
+            1.5,
+            2.0
+          ],
+          "bandwidth_lookback": [
+            100,
+            200
+          ],
+          "quantile": [
+            0.1,
+            0.2
+          ],
+          "squeeze_memory": [
+            3,
+            6
+          ],
+          "breakout_lookback": [
+            48,
+            96,
+            192
+          ]
+        }
+      }
+    ]
+  },
+  "split_name": "train",
+  "split": {
+    "start": "2021-01-01T00:00:00Z",
+    "end": "2024-07-01T00:00:00Z",
+    "locked": false
+  },
+  "dataset_sha256": "503cad72b8f65515c61de7b1612277584ca5e4e653e88cf25aa4c57b64a668e7",
+  "shortlist_sha256": null,
+  "run_id": "train_9ea7950ac17f",
+  "data_file": "C:\\phong\\AI\\finance\\my-backtest6\\minhkhoi\\data\\btc\\h2\\BTCUSD_H2_20200101_20260622_binance_futures.parquet",
+  "candles": 15324,
+  "data_start": "2021-01-01 00:00:00+00:00",
+  "data_end": "2024-06-30 22:00:00+00:00",
+  "numba_threads": 22,
+  "shortlist_file": null,
+  "shortlist_configs": 0,
+  "effective_selection": {
+    "min_expectancy_r": 0.1,
+    "strict_expectancy": true,
+    "min_trades": 40,
+    "min_profit_factor": 1.15,
+    "max_drawdown_r": null,
+    "max_cost_share_of_gross_wins": 0.4,
+    "near_threshold_margin_r": 0.03,
+    "keep_best_per_strategy": 20,
+    "detailed_records_max": 150
+  }
+}
