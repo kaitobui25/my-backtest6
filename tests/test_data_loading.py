@@ -68,3 +68,15 @@ def test_load_parquet_accepts_case_insensitive_date_column(tmp_path):
     candles = load_parquet(path)
 
     assert candles.frame["datetime"].tolist() == timestamps.tolist()
+
+
+def test_load_parquet_infers_timestamp_column_with_unknown_name(tmp_path):
+    timestamps = pd.date_range("2023-01-01", periods=2, freq="1h", tz="UTC")
+    frame = _ohlcv_frame()
+    frame.insert(0, "__index_level_0__", timestamps)
+    path = tmp_path / "unknown_timestamp_name.parquet"
+    frame.to_parquet(path, index=False)
+
+    candles = load_parquet(path)
+
+    assert candles.frame["datetime"].tolist() == timestamps.tolist()
