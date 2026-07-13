@@ -1,6 +1,6 @@
 # ExactBT v0.6 timeframe configs
 
-This folder contains controlled BTC timeframe comparisons for:
+This folder contains BTC v0.6 breakout/volatility TRAIN configs for:
 
 - M5
 - M15
@@ -9,20 +9,23 @@ This folder contains controlled BTC timeframe comparisons for:
 - H2
 - H4
 
-Every YAML keeps the same v0.6 strategies, parameter grid, fees, slippage, and data splits. Only the Parquet dataset/timeframe and the sample-size gate change.
+All files keep the same strategies, parameter grid, fees, slippage, and date splits. The dataset, timeframe-specific sample gate, and result directory differ by file.
 
-Selection thresholds on every split:
+## Selection thresholds
+
+Every split requires:
 
 ```yaml
 min_expectancy_r: 0.1
+strict_expectancy: true
 min_profit_factor: 1.15
 ```
+
+Because `strict_expectancy` is enabled, the expectancy condition is strictly greater than `0.10R`.
 
 ## Timeframe-specific `min_trades`
 
 M15 is the reference: `300` TRAIN trades and `80` trades on each one-year VALIDATION/OOS split.
-
-For another timeframe, the gate is scaled inversely by candle duration:
 
 ```text
 train_min = 300 × 15 minutes / timeframe_minutes
@@ -40,31 +43,48 @@ Rounded to practical integers, with floors of `30` TRAIN trades and `10` VALIDAT
 | H2 | 40 | 10 | 10 |
 | H4 | 30 | 10 | 10 |
 
-This keeps the required trade density comparable across candle sizes without lowering the gate arbitrarily just to create passing configs.
+## One-click TRAIN runner
 
-H6, H8, H12, D1, D3, W1, and MN1 are not included in this copied v0.6 grid. The current parameters are expressed in bars (`lookback` up to 384, EMA up to 200, and hold up to 384), so copying them unchanged to very slow candles changes the strategy horizon drastically and can leave too little usable history. Those timeframes need separately scaled parameter windows, not merely a smaller `min_trades` value.
+From Windows Explorer, double-click:
 
-Because these files are inside `config/v0.6/`, their project paths intentionally use `../data/...` and `../results` to match ExactBT's current relative-path resolver.
-
-Run one TRAIN search from the repository root:
-
-```powershell
-.\.venv\Scripts\python.exe -m exactbt.cli search `
-  --config config/v0.6/search_v0.6_breakout_volatility_m15.yaml `
-  --split train
+```text
+run_v0.6_all_timeframes.bat
 ```
 
-Run all six TRAIN searches sequentially:
+The BAT runs sequentially:
 
-```powershell
-Get-ChildItem .\config\v0.6\search_v0.6_breakout_volatility_*.yaml |
-  Sort-Object Name |
-  ForEach-Object {
-    & .\.venv\Scripts\python.exe -m exactbt.cli search `
-      --config $_.FullName `
-      --split train
-    if ($LASTEXITCODE -ne 0) {
-      throw "ExactBT failed for $($_.FullName)"
-    }
-  }
+```text
+M5 -> M15 -> M30 -> H1 -> H2 -> H4
 ```
+
+It stops immediately if one timeframe fails. ExactBT checkpoints already written are preserved, so running the BAT again resumes completed batches.
+
+The BAT intentionally runs TRAIN only. VALIDATION and FINAL OOS must use frozen passing shortlists from the preceding split; running the full parameter grid directly on those splits would invalidate the research workflow.
+
+## Result layout
+
+Each config writes to its own directory:
+
+```text
+results/
+└── v0.6_timeframes/
+    ├── m5/
+    │   └── train_<hash>/
+    ├── m15/
+    │   └── train_<hash>/
+    ├── m30/
+    │   └── train_<hash>/
+    ├── h1/
+    │   └── train_<hash>/
+    ├── h2/
+    │   └── train_<hash>/
+    ├── h4/
+    │   └── train_<hash>/
+    └── run_all_status.log
+```
+
+The status log records the start, completion, or failure of each timeframe. Full ExactBT metrics and checkpoints remain inside the corresponding `train_<hash>` folder.
+
+## Why slower timeframes are not copied here
+
+H6, H8, H12, D1, D3, W1, and MN1 need more than a smaller `min_trades`. The current v0.6 parameters are expressed in bars (`lookback` up to 384, EMA up to 200, and hold up to 384), so copying the grid unchanged to slow candles changes the real-time strategy horizon drastically and may leave too little usable history. Those timeframes require a separately scaled parameter grid.
