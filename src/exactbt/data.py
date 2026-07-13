@@ -122,6 +122,23 @@ def _parse_timestamp(values: pd.Series) -> pd.Series:
     return pd.to_datetime(values, utc=True, errors="coerce")
 
 
+def _series_looks_like_timestamp(values: pd.Series) -> bool:
+    sample = values.dropna().iloc[:256]
+    if sample.empty:
+        return False
+
+    parsed = _parse_timestamp(sample)
+    if parsed.notna().mean() < 0.95:
+        return False
+
+    years = parsed.dropna().dt.year
+    return (
+        not years.empty
+        and years.between(1990, 2200).all()
+        and parsed.dropna().nunique() > 1
+    )
+
+
 def _index_looks_like_timestamp(index: pd.Index) -> bool:
     if isinstance(index, pd.DatetimeIndex):
         return True
@@ -213,6 +230,21 @@ def _find_timestamp_column(frame: pd.DataFrame, configured: str | None) -> Any:
         match = _matching_column(frame, candidate)
         if match is not None:
             return match
+
+    inferred = [
+        column
+        for column in frame.columns
+        if _normalize_name(column) not in _REQUIRED_NUMERIC
+        and _series_looks_like_timestamp(frame[column])
+    ]
+    if len(inferred) == 1:
+        return inferred[0]
+    if len(inferred) > 1:
+        raise ValueError(
+            "Ambiguous timestamp-like columns: "
+            f"{[str(column) for column in inferred]}. "
+            f"{_schema_description(frame)}"
+        )
 
     raise ValueError(
         "Missing timestamp column. Accepted normalized names: "
