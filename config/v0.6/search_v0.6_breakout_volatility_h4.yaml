@@ -4,7 +4,7 @@
 # - strategy logic and parameter grid are identical across timeframe files;
 # - only the Parquet dataset/timeframe changes;
 # - selection requires expectancy > 0.10R and profit factor >= 1.15;
-# - min_trades is scaled from the M15 baseline by candle duration.
+# - min_trades is scaled from the M15 baseline with statistical floors.
 
 breakout_execution: &breakout_execution
   atr_stop_window: [14]
