@@ -6,6 +6,7 @@ Strategy-only responsibilities:
 - reject candles sweeping both previous-day levels;
 - allow same-candle sweep + reclaim;
 - expire a setup after max_wait_candles, counting the sweep candle;
+- optionally restrict signals to long-only or short-only;
 - return direction, stop specification, and setup start index.
 
 It does NOT implement entry timing, SL/TP fills, fees, slippage, both-hit order,
@@ -43,6 +44,7 @@ _STOP_BUFFER = 2
 
 # Integer parameter layout.
 _MAX_WAIT = 0
+_SIDE_MODE = 1  # 0 both, 1 long only, -1 short only
 
 
 @njit(cache=True)
@@ -89,6 +91,7 @@ def step_nb(
         return 0, np.nan, STOP_ABSOLUTE_PRICE, -1
 
     max_wait = params_i[_MAX_WAIT]
+    side_mode = params_i[_SIDE_MODE]
     if state_i[_LONG_ACTIVE] == 1 and i - state_i[_LONG_START] >= max_wait:
         state_i[_LONG_ACTIVE] = 0
         state_i[_LONG_START] = -1
@@ -102,10 +105,12 @@ def step_nb(
     reclaim_buffer = params_f[_RECLAIM_BUFFER]
     stop_buffer = params_f[_STOP_BUFFER]
 
-    sweep_long = low[i] < pdl * (1.0 - sweep_buffer)
-    sweep_short = high[i] > pdh * (1.0 + sweep_buffer)
+    raw_sweep_long = low[i] < pdl * (1.0 - sweep_buffer)
+    raw_sweep_short = high[i] > pdh * (1.0 + sweep_buffer)
 
-    if sweep_long and sweep_short:
+    # A candle crossing both previous-day levels is ambiguous even in a
+    # direction-restricted experiment, so reject it conservatively.
+    if raw_sweep_long and raw_sweep_short:
         state_i[_LONG_ACTIVE] = 0
         state_i[_LONG_START] = -1
         state_i[_SHORT_ACTIVE] = 0
@@ -113,6 +118,9 @@ def step_nb(
         state_f[_LONG_EXTREME] = np.nan
         state_f[_SHORT_EXTREME] = np.nan
         return 0, np.nan, STOP_ABSOLUTE_PRICE, -1
+
+    sweep_long = side_mode >= 0 and raw_sweep_long
+    sweep_short = side_mode <= 0 and raw_sweep_short
 
     if sweep_long and state_i[_LONG_ACTIVE] == 0:
         state_i[_LONG_ACTIVE] = 1
@@ -130,11 +138,13 @@ def step_nb(
         state_f[_SHORT_EXTREME] = max(state_f[_SHORT_EXTREME], high[i])
 
     long_reclaimed = (
-        state_i[_LONG_ACTIVE] == 1
+        side_mode >= 0
+        and state_i[_LONG_ACTIVE] == 1
         and close[i] >= pdl * (1.0 + reclaim_buffer)
     )
     short_reclaimed = (
-        state_i[_SHORT_ACTIVE] == 1
+        side_mode <= 0
+        and state_i[_SHORT_ACTIVE] == 1
         and close[i] <= pdh * (1.0 - reclaim_buffer)
     )
 
@@ -175,7 +185,7 @@ def step_nb(
 @dataclass(frozen=True)
 class LiquiditySweepPlugin:
     name: str = "liquidity_sweep_reclaim"
-    version: str = "1"
+    version: str = "2"
     state_float_size: int = 2
     state_int_size: int = 5
     step_nb: Any = step_nb
@@ -209,14 +219,18 @@ class LiquiditySweepPlugin:
     ) -> EncodedStrategyParameters:
         del features
         float_params = np.empty((len(configs), 3), dtype=np.float64)
-        int_params = np.empty((len(configs), 1), dtype=np.int64)
+        int_params = np.empty((len(configs), 2), dtype=np.int64)
+        side_codes = {"both": 0, "long": 1, "short": -1}
         for row, config in enumerate(configs):
             float_params[row] = (
                 float(config["sweep_buffer_ratio"]),
                 float(config["reclaim_buffer_ratio"]),
                 float(config["stop_buffer_ratio"]),
             )
-            int_params[row, 0] = int(config["max_wait_candles"])
+            int_params[row] = (
+                int(config["max_wait_candles"]),
+                side_codes[str(config.get("side", "both"))],
+            )
         return EncodedStrategyParameters(
             float_params=np.ascontiguousarray(float_params),
             int_params=np.ascontiguousarray(int_params),

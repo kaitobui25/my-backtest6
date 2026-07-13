@@ -1,0 +1,180 @@
+name: ExactBT result diagnostics
+
+on:
+  push:
+    branches:
+      - research/exactbt-v03
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install analysis dependencies
+        run: python -m pip install --disable-pip-version-check pandas pyarrow
+      - name: Analyze committed result parquet files
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import numpy as np
+          import pandas as pd
+
+          runs = sorted(Path('results').glob('train_*'))
+          if not runs:
+              raise SystemExit('No committed train result directory found')
+          run = runs[-1]
+          all_path = run / 'all_results.parquet'
+          if not all_path.exists():
+              raise SystemExit(f'Missing {all_path}')
+
+          out = Path('diagnostics_artifact')
+          out.mkdir(exist_ok=True)
+          df = pd.read_parquet(all_path)
+          summary = json.loads((run / 'summary.json').read_text(encoding='utf-8'))
+          selection = summary['manifest']['config']['selection']
+          min_trades = int(selection.get('min_trades', 0))
+          threshold = float(selection.get('min_expectancy_r', 0.15))
+
+          df = df.sort_values(
+              ['expectancy_R', 'profit_factor_R', 'max_drawdown_R', 'trades'],
+              ascending=[False, False, True, False],
+              na_position='last',
+          ).reset_index(drop=True)
+          eligible = df[df['trades'] >= min_trades].copy()
+          enough_100 = df[df['trades'] >= 100].copy()
+          active = df[df['trades'] > 0].copy()
+
+          metric_cols = [
+              'strategy','config_id','parameters_json','trades','wins','losses',
+              'signals','expectancy_R','gross_expectancy_R','avg_cost_R',
+              'profit_factor_R','max_drawdown_R','cost_share_of_gross_wins',
+          ]
+          param_cols = [c for c in df.columns if c.startswith('param_')]
+          export_cols = [c for c in metric_cols + param_cols if c in df.columns]
+
+          df.head(250)[export_cols].to_csv(out / 'top_raw_250.csv', index=False)
+          eligible.head(250)[export_cols].to_csv(out / 'top_eligible_250.csv', index=False)
+          enough_100.head(250)[export_cols].to_csv(out / 'top_min100_250.csv', index=False)
+
+          near_path = run / 'near_threshold_results.parquet'
+          if near_path.exists():
+              pd.read_parquet(near_path).to_csv(out / 'near_threshold.csv', index=False)
+          family_path = run / 'family_best_results.parquet'
+          if family_path.exists():
+              pd.read_parquet(family_path).to_csv(out / 'family_best.csv', index=False)
+
+          def finite_max(s):
+              s = pd.to_numeric(s, errors='coerce').replace([np.inf, -np.inf], np.nan)
+              return s.max() if s.notna().any() else np.nan
+
+          rows = []
+          for strategy, g in df.groupby('strategy', sort=True):
+              ge = g[g['trades'] >= min_trades]
+              g100 = g[g['trades'] >= 100]
+              ga = g[g['trades'] > 0]
+              best_raw = g.iloc[0]
+              best_eligible = ge.iloc[0] if len(ge) else None
+              best_100 = g100.iloc[0] if len(g100) else None
+              rows.append({
+                  'strategy': strategy,
+                  'configs': len(g),
+                  'configs_with_trades': len(ga),
+                  'configs_ge_100_trades': len(g100),
+                  'configs_ge_min_trades': len(ge),
+                  'positive_net_configs': int((ga['expectancy_R'] > 0).sum()),
+                  'positive_gross_configs': int((ga['gross_expectancy_R'] > 0).sum()),
+                  'best_raw_expectancy_R': best_raw['expectancy_R'],
+                  'best_raw_trades': best_raw['trades'],
+                  'best_ge100_expectancy_R': np.nan if best_100 is None else best_100['expectancy_R'],
+                  'best_ge100_trades': np.nan if best_100 is None else best_100['trades'],
+                  'best_eligible_expectancy_R': np.nan if best_eligible is None else best_eligible['expectancy_R'],
+                  'best_eligible_gross_expectancy_R': np.nan if best_eligible is None else best_eligible['gross_expectancy_R'],
+                  'best_eligible_avg_cost_R': np.nan if best_eligible is None else best_eligible['avg_cost_R'],
+                  'best_eligible_profit_factor_R': np.nan if best_eligible is None else best_eligible['profit_factor_R'],
+                  'best_eligible_max_drawdown_R': np.nan if best_eligible is None else best_eligible['max_drawdown_R'],
+                  'best_eligible_trades': np.nan if best_eligible is None else best_eligible['trades'],
+                  'median_active_expectancy_R': ga['expectancy_R'].median() if len(ga) else np.nan,
+                  'max_active_profit_factor_R': finite_max(ga['profit_factor_R']) if len(ga) else np.nan,
+              })
+          family = pd.DataFrame(rows).sort_values(
+              ['best_eligible_expectancy_R','best_ge100_expectancy_R','best_raw_expectancy_R'],
+              ascending=False,
+              na_position='last',
+          )
+          family.to_csv(out / 'strategy_diagnostics.csv', index=False)
+
+          sensitivity_rows = []
+          for strategy, g in enough_100.groupby('strategy'):
+              for col in param_cols:
+                  if col not in g or g[col].notna().sum() == 0:
+                      continue
+                  for value, v in g.groupby(col, dropna=True):
+                      sensitivity_rows.append({
+                          'strategy': strategy,
+                          'parameter': col.removeprefix('param_'),
+                          'value': value,
+                          'configs': len(v),
+                          'median_expectancy_R': v['expectancy_R'].median(),
+                          'best_expectancy_R': v['expectancy_R'].max(),
+                          'median_gross_expectancy_R': v['gross_expectancy_R'].median(),
+                          'median_avg_cost_R': v['avg_cost_R'].median(),
+                          'median_trades': v['trades'].median(),
+                      })
+          pd.DataFrame(sensitivity_rows).to_csv(out / 'parameter_sensitivity_min100.csv', index=False)
+
+          lines = [
+              '# ExactBT full-result diagnostics',
+              '',
+              f'- Run: `{run}`',
+              f'- Total configs: **{len(df):,}**',
+              f'- Configs with at least one trade: **{len(active):,}**',
+              f'- Configs with at least 100 trades: **{len(enough_100):,}**',
+              f'- Configs with at least {min_trades} trades: **{len(eligible):,}**',
+              f'- Eligible configs above {threshold:.3f}R: **{int((eligible.expectancy_R > threshold).sum()):,}**',
+              f'- Eligible configs with positive net expectancy: **{int((eligible.expectancy_R > 0).sum()):,}**',
+              f'- Eligible configs with positive gross expectancy: **{int((eligible.gross_expectancy_R > 0).sum()):,}**',
+              '',
+              '## Best eligible configurations',
+              '',
+          ]
+          if eligible.empty:
+              lines.append('No configuration satisfies the minimum-trade gate.')
+          else:
+              show = eligible.head(20)
+              lines.append('| Strategy | Trades | Net E | Gross E | Cost R | PF | DD R |')
+              lines.append('|---|---:|---:|---:|---:|---:|---:|')
+              for _, r in show.iterrows():
+                  lines.append(
+                      f"| {r.strategy} | {int(r.trades)} | {r.expectancy_R:.4f} | "
+                      f"{r.gross_expectancy_R:.4f} | {r.avg_cost_R:.4f} | "
+                      f"{r.profit_factor_R:.3f} | {r.max_drawdown_R:.1f} |"
+                  )
+          lines.extend(['', '## Strategy-family diagnostics', ''])
+          lines.append('| Strategy | Configs | >=300 | Positive net | Best eligible E | Best eligible trades |')
+          lines.append('|---|---:|---:|---:|---:|---:|')
+          for _, r in family.iterrows():
+              be = 'n/a' if pd.isna(r.best_eligible_expectancy_R) else f'{r.best_eligible_expectancy_R:.4f}'
+              bt = 'n/a' if pd.isna(r.best_eligible_trades) else str(int(r.best_eligible_trades))
+              lines.append(
+                  f"| {r.strategy} | {int(r.configs)} | {int(r.configs_ge_min_trades)} | "
+                  f"{int(r.positive_net_configs)} | {be} | {bt} |"
+              )
+          (out / 'diagnostics.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: exactbt-result-diagnostics
+          path: diagnostics_artifact/
+          if-no-files-found: error
