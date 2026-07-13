@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Callable, Iterable, Sequence, TypeVar
 
@@ -31,11 +32,8 @@ def project_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-def clear_screen() -> None:
-    print("\n" * 2)
-
-
 def print_header(title: str) -> None:
+    print()
     print("=" * 72)
     print(title)
     print("=" * 72)
@@ -74,20 +72,23 @@ def choose_from_recent(
         for index, item in enumerate(visible, start=1):
             print(f"[{index}] {label(item)}")
 
-        next_option = len(visible) + 1
+        option = len(visible) + 1
         more_available = len(items) > RECENT_LIMIT and not show_all
         if more_available:
-            print(f"[{next_option}] Xem them")
-            next_option += 1
+            print(f"[{option}] Xem them")
+            more_option = option
+            option += 1
+        else:
+            more_option = None
 
-        manual_option: int | None = None
         if allow_manual_path:
-            manual_option = next_option
+            manual_option = option
             print(f"[{manual_option}] Nhap duong dan khac")
+        else:
+            manual_option = None
 
         print("[0] Huy")
         answer = input("Lua chon: ").strip()
-
         if answer == "0":
             return None
         if not answer.isdigit():
@@ -97,24 +98,22 @@ def choose_from_recent(
         choice = int(answer)
         if 1 <= choice <= len(visible):
             return visible[choice - 1]
-
-        if more_available and choice == len(visible) + 1:
+        if more_option is not None and choice == more_option:
             show_all = True
             continue
-
         if manual_option is not None and choice == manual_option:
             raw = input("Nhap folder result hoac passing_results.parquet: ").strip().strip('"')
-            if not raw:
-                print("Duong dan rong.")
-                continue
-            return Path(raw)
-
+            if raw:
+                return Path(raw)
+            print("Duong dan rong.")
+            continue
         print("Lua chon khong hop le.")
 
 
 def get_search_yamls(root: Path) -> list[Path]:
     config_dir = root / "config"
-    candidates = set(config_dir.glob("search_*.yaml")) | set(config_dir.glob("search_*.yml"))
+    candidates = set(config_dir.glob("search_*.yaml"))
+    candidates |= set(config_dir.glob("search_*.yml"))
 
     base_yamls: list[Path] = []
     for path in candidates:
@@ -136,12 +135,8 @@ def get_search_yamls(root: Path) -> list[Path]:
 
 
 def yaml_label(root: Path, path: Path) -> str:
-    rel = path.relative_to(root)
-    modified = path.stat().st_mtime
-    from datetime import datetime
-
-    stamp = datetime.fromtimestamp(modified).strftime("%Y-%m-%d %H:%M:%S")
-    return f"{rel}  |  modified {stamp}"
+    stamp = datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
+    return f"{path.relative_to(root)}  |  modified {stamp}"
 
 
 def read_result_info(path: Path) -> ResultInfo:
@@ -163,15 +158,10 @@ def read_result_info(path: Path) -> ResultInfo:
         total_configs = int(total) if total is not None else None
         passing_configs = int(passing) if passing is not None else None
         if split_name == "unknown":
-            manifest = summary.get("manifest", {})
-            split_name = str(manifest.get("split_name", split_name))
+            nested_manifest = summary.get("manifest", {})
+            split_name = str(nested_manifest.get("split_name", split_name))
 
-    return ResultInfo(
-        path=path,
-        split_name=split_name,
-        total_configs=total_configs,
-        passing_configs=passing_configs,
-    )
+    return ResultInfo(path, split_name, total_configs, passing_configs)
 
 
 def get_result_dirs(root: Path, split_name: str) -> list[ResultInfo]:
@@ -179,7 +169,7 @@ def get_result_dirs(root: Path, split_name: str) -> list[ResultInfo]:
     if not results_dir.exists():
         return []
 
-    candidates: list[ResultInfo] = []
+    found: list[ResultInfo] = []
     for path in results_dir.glob(f"{split_name}_*"):
         if not path.is_dir() or not (path / "passing_results.parquet").exists():
             continue
@@ -188,20 +178,19 @@ def get_result_dirs(root: Path, split_name: str) -> list[ResultInfo]:
         except (OSError, ValueError, json.JSONDecodeError):
             continue
         if info.split_name == split_name:
-            candidates.append(info)
+            found.append(info)
 
     return sorted(
-        candidates,
+        found,
         key=lambda item: (item.path.stat().st_mtime, item.path.name.lower()),
         reverse=True,
     )
 
 
 def result_label(root: Path, info: ResultInfo) -> str:
-    rel = info.path.relative_to(root)
     total = "?" if info.total_configs is None else str(info.total_configs)
     passing = "?" if info.passing_configs is None else str(info.passing_configs)
-    return f"{rel}  |  total={total}, passing={passing}"
+    return f"{info.path.relative_to(root)}  |  total={total}, passing={passing}"
 
 
 def normalize_result_path(root: Path, selected: ResultInfo | Path) -> Path:
@@ -209,16 +198,11 @@ def normalize_result_path(root: Path, selected: ResultInfo | Path) -> Path:
         return selected.path.resolve()
 
     path = selected.expanduser()
-    if not path.is_absolute():
-        path = (root / path).resolve()
-    else:
-        path = path.resolve()
-
+    path = path.resolve() if path.is_absolute() else (root / path).resolve()
     if path.is_file():
         if path.name.lower() != "passing_results.parquet":
-            raise RunnerError("Chi chap nhan folder result hoac file passing_results.parquet.")
+            raise RunnerError("Chi chap nhan folder result hoac passing_results.parquet.")
         path = path.parent
-
     if not path.is_dir():
         raise RunnerError(f"Khong tim thay folder result: {path}")
     return path
@@ -226,9 +210,8 @@ def normalize_result_path(root: Path, selected: ResultInfo | Path) -> Path:
 
 def confirm_source_result(root: Path, expected_split: str) -> Path | None:
     while True:
-        infos = get_result_dirs(root, expected_split)
         selected = choose_from_recent(
-            infos,
+            get_result_dirs(root, expected_split),
             title=f"Chon ket qua {expected_split.upper()} de dong bang",
             label=lambda item: result_label(root, item),
             allow_manual_path=True,
@@ -241,7 +224,7 @@ def confirm_source_result(root: Path, expected_split: str) -> Path | None:
             info = read_result_info(result_dir)
             if info.split_name != expected_split:
                 raise RunnerError(
-                    f"Result nay la split '{info.split_name}', can split '{expected_split}'."
+                    f"Result nay la split '{info.split_name}', can '{expected_split}'."
                 )
             passing_file = result_dir / "passing_results.parquet"
             if not passing_file.exists():
@@ -258,17 +241,20 @@ def confirm_source_result(root: Path, expected_split: str) -> Path | None:
             return result_dir
 
 
-def relative_text(root: Path, path: Path) -> str:
+def project_relative(root: Path, path: Path) -> str:
     try:
         return path.resolve().relative_to(root.resolve()).as_posix()
     except ValueError:
         return str(path.resolve())
 
 
-def freeze_passing_results(root: Path, result_dir: Path, target_split: str) -> tuple[Path, int]:
+def freeze_passing_results(
+    root: Path,
+    result_dir: Path,
+    target_split: str,
+) -> tuple[Path, int]:
     passing_file = result_dir / "passing_results.parquet"
     frame = pd.read_parquet(passing_file)
-
     if frame.empty:
         raise RunnerError(
             f"{result_dir.name} khong co config passing. Khong the chay {target_split}."
@@ -286,7 +272,12 @@ def freeze_passing_results(root: Path, result_dir: Path, target_split: str) -> t
         parameters = json.loads(str(row["parameters_json"]))
         if not isinstance(parameters, dict):
             raise RunnerError("parameters_json phai la JSON object.")
-        stable = json.dumps(parameters, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        stable = json.dumps(
+            parameters,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
         key = (strategy, stable)
         if key in seen:
             continue
@@ -297,7 +288,7 @@ def freeze_passing_results(root: Path, result_dir: Path, target_split: str) -> t
     generated_dir.mkdir(parents=True, exist_ok=True)
     output = generated_dir / f"frozen_{result_dir.name}_to_{target_split}.json"
     payload = {
-        "source": relative_text(root, passing_file),
+        "source": project_relative(root, passing_file),
         "source_split": read_result_info(result_dir).split_name,
         "target_split": target_split,
         "number_of_configs": len(configs),
@@ -310,14 +301,28 @@ def freeze_passing_results(root: Path, result_dir: Path, target_split: str) -> t
     return output, len(configs)
 
 
-def create_split_config(root: Path, base_yaml: Path, shortlist: Path, split_name: str, source_dir: Path) -> Path:
-    text = base_yaml.read_text(encoding="utf-8")
-    shortlist_value = relative_text(root, shortlist)
+def create_split_config(
+    root: Path,
+    base_yaml: Path,
+    shortlist: Path,
+    split_name: str,
+    source_dir: Path,
+) -> Path:
+    # ExactBT resolves relative paths from config_path.parent.parent.
+    # Therefore generated YAML must stay directly under config/, not config/generated/.
+    output = root / "config" / (
+        f"{base_yaml.stem}__{split_name}__from_{source_dir.name}.yaml"
+    )
+    shortlist_value = project_relative(root, shortlist)
+    yaml_value = json.dumps(shortlist_value, ensure_ascii=False)
 
-    shortlist_pattern = re.compile(r"(?m)^([ \t]*shortlist_file[ \t]*:[ \t]*).*$")
+    text = base_yaml.read_text(encoding="utf-8")
+    shortlist_pattern = re.compile(
+        r"(?m)^([ \t]*shortlist_file[ \t]*:[ \t]*).*$"
+    )
     if shortlist_pattern.search(text):
         text = shortlist_pattern.sub(
-            lambda match: f"{match.group(1)}{shortlist_value}",
+            lambda match: f"{match.group(1)}{yaml_value}",
             text,
             count=1,
         )
@@ -326,21 +331,46 @@ def create_split_config(root: Path, base_yaml: Path, shortlist: Path, split_name
         match = search_pattern.search(text)
         if not match:
             raise RunnerError(f"Khong tim thay block 'search:' trong {base_yaml}")
-        insertion = f"{match.group(0)}\n  shortlist_file: {shortlist_value}"
+        insertion = f"{match.group(0)}\n  shortlist_file: {yaml_value}"
         text = text[: match.start()] + insertion + text[match.end() :]
 
-    generated_dir = root / "config" / "generated"
-    generated_dir.mkdir(parents=True, exist_ok=True)
-    output = generated_dir / f"{base_yaml.stem}__{split_name}__from_{source_dir.name}.yaml"
     output.write_text(text, encoding="utf-8")
+    verify_generated_config(root, output, shortlist)
     return output
+
+
+def verify_generated_config(root: Path, config_path: Path, shortlist: Path) -> None:
+    if config_path.parent.resolve() != (root / "config").resolve():
+        raise RunnerError(
+            "Generated YAML phai nam truc tiep trong config/ de ExactBT resolve path dung."
+        )
+
+    text = config_path.read_text(encoding="utf-8")
+    match = re.search(r"(?m)^\s*shortlist_file\s*:\s*([^#\r\n]+)", text)
+    if not match:
+        raise RunnerError("Generated YAML khong co shortlist_file.")
+
+    raw = match.group(1).strip().strip('"\'')
+    candidate = Path(raw)
+    resolved = (
+        candidate.resolve()
+        if candidate.is_absolute()
+        else (config_path.parent.parent / candidate).resolve()
+    )
+    if resolved != shortlist.resolve() or not resolved.exists():
+        raise RunnerError(
+            "Shortlist path preflight failed:\n"
+            f"  YAML value : {raw}\n"
+            f"  Resolved   : {resolved}\n"
+            f"  Expected   : {shortlist.resolve()}"
+        )
 
 
 def choose_yaml(root: Path) -> Path | None:
     yamls = get_search_yamls(root)
     if not yamls:
         raise RunnerError(
-            "Khong tim thay YAML base dang config/search_*.yaml co shortlist_file null."
+            "Khong tim thay config/search_*.yaml base co shortlist_file null."
         )
     selected = choose_from_recent(
         yamls,
@@ -357,21 +387,30 @@ def print_command(command: Iterable[str]) -> None:
 
 
 def latest_result_dir(root: Path, split_name: str) -> Path | None:
-    dirs = [path for path in (root / "results").glob(f"{split_name}_*") if path.is_dir()]
-    if not dirs:
+    results_dir = root / "results"
+    if not results_dir.exists():
         return None
-    return max(dirs, key=lambda path: (path.stat().st_mtime, path.name.lower()))
+    dirs = [path for path in results_dir.glob(f"{split_name}_*") if path.is_dir()]
+    return max(
+        dirs,
+        key=lambda path: (path.stat().st_mtime, path.name.lower()),
+        default=None,
+    )
 
 
-def run_exactbt(root: Path, python_exe: Path, config_path: Path, split_name: str) -> None:
-    config_arg = relative_text(root, config_path)
+def run_exactbt(
+    root: Path,
+    python_exe: Path,
+    config_path: Path,
+    split_name: str,
+) -> None:
     command = [
         str(python_exe),
         "-m",
         "exactbt.cli",
         "search",
         "--config",
-        config_arg,
+        project_relative(root, config_path),
         "--split",
         split_name,
     ]
@@ -395,7 +434,6 @@ def run_exactbt(root: Path, python_exe: Path, config_path: Path, split_name: str
     result_dir = latest_result_dir(root, split_name)
     if result_dir is None:
         return
-
     print()
     print(f"Result folder: {result_dir}")
     summary = result_dir / "summary.md"
@@ -411,17 +449,15 @@ def choose_mode() -> str | None:
     print("[2] VALIDATION  (dong bang passing_results tu TRAIN)")
     print("[3] FINAL OOS   (dong bang passing_results tu VALIDATION)")
     print("[0] Thoat")
-
+    mapping = {"1": "train", "2": "validation", "3": "final_oos", "0": None}
     while True:
         answer = input("Lua chon: ").strip()
-        mapping = {"1": "train", "2": "validation", "3": "final_oos", "0": None}
         if answer in mapping:
             return mapping[answer]
         print("Lua chon khong hop le.")
 
 
 def run_one(root: Path, python_exe: Path) -> bool:
-    clear_screen()
     print_header("ExactBT Interactive Research Runner")
     mode = choose_mode()
     if mode is None:
@@ -429,10 +465,9 @@ def run_one(root: Path, python_exe: Path) -> bool:
 
     if mode == "train":
         yaml_path = choose_yaml(root)
-        if yaml_path is None:
-            return True
-        print(f"\nYAML: {yaml_path}")
-        run_exactbt(root, python_exe, yaml_path, "train")
+        if yaml_path is not None:
+            print(f"\nYAML: {yaml_path}")
+            run_exactbt(root, python_exe, yaml_path, "train")
         return True
 
     source_split = "train" if mode == "validation" else "validation"
@@ -448,7 +483,13 @@ def run_one(root: Path, python_exe: Path) -> bool:
     if yaml_path is None:
         return True
 
-    generated_config = create_split_config(root, yaml_path, shortlist, mode, source_dir)
+    generated_config = create_split_config(
+        root,
+        yaml_path,
+        shortlist,
+        mode,
+        source_dir,
+    )
     print()
     print(f"Base YAML       : {yaml_path}")
     print(f"Frozen shortlist: {shortlist}")
@@ -469,8 +510,7 @@ def main() -> int:
 
     try:
         while True:
-            continue_running = run_one(root, python_exe)
-            if not continue_running:
+            if not run_one(root, python_exe):
                 return 0
             if not ask_yes_no("Chay tac vu khac?", default=False):
                 return 0
