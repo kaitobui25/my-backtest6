@@ -37,7 +37,7 @@ engine:
   cancel_pending_on_new_day: true
 
 search:
-  output_dir: ../results
+  output_dir: ../results/v0.6_timeframes/m15
   batch_size: 48
   num_threads: 0
   shortlist_file: null
