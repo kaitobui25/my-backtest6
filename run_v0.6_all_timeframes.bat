@@ -4,6 +4,7 @@ chcp 65001 >nul
 cd /d "%~dp0"
 
 set "PYTHON=.venv\Scripts\python.exe"
+set "PYTHONPATH=%CD%\src"
 set "RESULT_ROOT=results\v0.6_timeframes"
 set "STATUS_LOG=%RESULT_ROOT%\run_all_status.log"
 
@@ -15,15 +16,39 @@ if not exist "%PYTHON%" (
     exit /b 1
 )
 
+if not exist "src\exactbt\cli.py" (
+    echo [ERROR] ExactBT source package not found: %CD%\src\exactbt
+    echo Run this BAT from the repository that contains src\exactbt.
+    echo.
+    pause
+    exit /b 1
+)
+
+rem ExactBT uses a src-layout package. Make it importable even when the
+rem virtual environment was not installed with pip install -e .
+"%PYTHON%" -c "import exactbt, exactbt.cli" >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] Python cannot import exactbt from: %PYTHONPATH%
+    echo Python: %CD%\%PYTHON%
+    echo.
+    pause
+    exit /b 1
+)
+
 if not exist "%RESULT_ROOT%" mkdir "%RESULT_ROOT%"
 
 > "%STATUS_LOG%" echo ExactBT v0.6 all-timeframe TRAIN run
 >>"%STATUS_LOG%" echo Started: %DATE% %TIME%
+>>"%STATUS_LOG%" echo Python: %CD%\%PYTHON%
+>>"%STATUS_LOG%" echo PYTHONPATH: %PYTHONPATH%
 
 cls
 echo ============================================================
 echo ExactBT v0.6 - RUN ALL BTC TIMEFRAMES - TRAIN
 echo ============================================================
+echo.
+echo Python package source:
+echo   %PYTHONPATH%
 echo.
 echo Results will be separated under:
 echo   %RESULT_ROOT%\m5
