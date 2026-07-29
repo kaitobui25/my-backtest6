@@ -1,0 +1,131 @@
+# ExactBT v0.9 - trend following tan suat cao tren BTCUSDT M15.
+#
+# Muc tieu nghien cuu:
+# - uu tien trend continuation va breakout, khong dung mean reversion;
+# - nham khoang 15-20 lenh/thang tren VALIDATION va FINAL OOS 1 nam;
+# - chi giu config co expectancy duong sau phi va truot gia;
+# - grid rong hon v0.6-v0.8, chap nhan ton them RAM va CPU.
+#
+# Luu y quan trong:
+# - day la search space, khong phai loi hua loi nhuan;
+# - neu khong co config vuot TRAIN va VALIDATION thi khong ha gate OOS de ep ket qua;
+# - FINAL OOS van bi khoa de tranh toi uu theo du lieu tuong lai.
+
+# Tham so thuc thi dung chung cho ADX EMA pullback.
+# Stop 1.5-2.5 ATR de khong qua rong nhu v0.6, giup tang vong quay lenh.
+# RR 1.5-2.5 can bang giua ty le thang va loi nhuan moi lenh.
+# Neu qua it lenh: giam max_hold_bars hoac adx_threshold, khong giam stop tuy tien.
+# Neu nhieu lenh nhung PF thap: bo stop 1.5 hoac tang adx_threshold.
+pullback_execution: &pullback_execution
+  atr_stop_window: [14]
+  atr_stop_multiplier: [1.5, 2.0, 2.5]
+  risk_reward: [1.5, 2.0, 2.5]
+  max_hold_bars: [32, 64, 96]
+  side: [both, long, short]
+
+# Tham so thuc thi dung chung cho rolling range breakout.
+# Cho phep hold 192 bar vi breakout lon co the can 2 ngay tren M15 de chay het trend.
+# Neu qua it lenh: giam lookback truoc, sau do moi giam breakout_atr_buffer.
+# Neu bi false breakout nhieu: tang buffer len 0.25 hoac tang regime_ema.
+breakout_execution: &breakout_execution
+  atr_stop_window: [14]
+  atr_stop_multiplier: [1.5, 2.0, 2.5]
+  risk_reward: [1.5, 2.0, 2.5, 3.0]
+  max_hold_bars: [32, 64, 96, 192]
+  side: [both, long, short]
+
+data:
+  file: data/btcusdt_15m.parquet
+  timestamp_column: auto
+  active_split: train
+  splits:
+    train:
+      start: "2021-01-01T00:00:00Z"
+      end: "2024-07-01T00:00:00Z"
+      locked: false
+    validation:
+      start: "2024-07-01T00:00:00Z"
+      end: "2025-07-01T00:00:00Z"
+      locked: false
+    final_oos:
+      start: "2025-07-01T00:00:00Z"
+      end: "2026-07-01T00:00:00Z"
+      locked: true
+
+engine:
+  # Tong chi phi round trip = 0.14%, giu nguyen gia dinh bao thu cua repo.
+  fee_per_side: 0.0005
+  slippage_per_side: 0.0002
+  cancel_pending_on_new_day: true
+
+search:
+  output_dir: results
+  # 96 dung RAM nhieu hon v0.6-v0.8 nhung giam overhead cho grid lon.
+  # Neu may bi swap hoac MemoryError: doi 96 -> 48; neu van loi doi 48 -> 24.
+  batch_size: 96
+  # 0 = engine tu dung tat ca CPU kha dung. Doi thanh so core muon gioi han neu can.
+  num_threads: 0
+  # TRAIN phai chay tu grid day. Runner se tao shortlist dong bang cho VALIDATION.
+  shortlist_file: null
+
+selection:
+  # TRAIN 42 thang: 630 lenh tuong duong trung binh 15 lenh/thang.
+  # Muon gan 20 lenh/thang hon: doi 630 -> 840 sau khi xem phan bo trade count.
+  min_trades: 630
+  # Expectancy va PF deu phai duong sau phi; khong giu config tong the thua lo.
+  min_expectancy_r: 0.08
+  strict_expectancy: true
+  min_profit_factor: 1.15
+  # Gioi han drawdown theo R de loai config lai nho nhung duong von qua xau.
+  # Neu khong con config passing: tang 35 -> 45, khong bo gate loi nhuan truoc.
+  max_drawdown_r: 35
+  max_cost_share_of_gross_wins: 0.45
+  near_threshold_margin_r: 0.03
+  # Grid lon nen giu nhieu ung vien hon de tranh shortlist qua mong.
+  keep_best_per_strategy: 40
+  detailed_records_max: 300
+  by_split:
+    validation:
+      # 180 lenh/nam = 15 lenh/thang. Doi thanh 240 neu bat buoc 20 lenh/thang.
+      min_trades: 180
+      min_expectancy_r: 0.0
+      strict_expectancy: true
+      min_profit_factor: 1.10
+      max_drawdown_r: 20
+    final_oos:
+      # Gate OOS giong VALIDATION; khong ha tieu chuan sau khi da xem ket qua.
+      min_trades: 180
+      min_expectancy_r: 0.0
+      strict_expectancy: true
+      min_profit_factor: 1.10
+      max_drawdown_r: 20
+
+strategies:
+  # Trend continuation: gia pullback qua EMA nhanh roi dong cua reclaim lai EMA.
+  # EMA nhanh 10/20 cho nhieu tin hieu; EMA 50 loc pullback cham va sach hon.
+  # EMA cham 100/200 xac dinh huong trend lon, tranh vao nguoc regime.
+  # ADX 12-22 gom ca trend moi hinh thanh va trend da ro rang.
+  # require_di=false tang trade; true la nhom chat luong de so sanh truc tiep.
+  - plugin: exactbt.strategies.research:ADX_EMA_PULLBACK_PLUGIN
+    enabled: true
+    parameters:
+      <<: *pullback_execution
+      fast_ema: [10, 20, 50]
+      slow_ema: [100, 200]
+      adx_window: [14]
+      adx_threshold: [12, 15, 18, 22]
+      pullback_lookback: [2, 4, 8]
+      require_di: [false, true]
+
+  # Trend breakout: dong cua vuot bien rolling range va cung huong EMA regime.
+  # Lookback 16-32 tao nhieu lenh; 48-96 giu nhom breakout cham de doi chieu.
+  # Buffer 0.0 bat som; 0.10/0.25 ATR giam false breakout.
+  # regime_ema 50 nhay hon, 100/200 bao thu hon.
+  - plugin: exactbt.strategies.trend:ROLLING_RANGE_BREAKOUT_PLUGIN
+    enabled: true
+    parameters:
+      <<: *breakout_execution
+      lookback: [16, 24, 32, 48, 72, 96]
+      atr_window: [14, 21]
+      breakout_atr_buffer: [0.0, 0.10, 0.25]
+      regime_ema: [50, 100, 200]
