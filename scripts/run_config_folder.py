@@ -14,7 +14,11 @@ import yaml
 
 
 class FolderRunError(RuntimeError):
-    pass
+    """Loi cau hinh/du lieu can dung ca batch."""
+
+
+class SkipRun(RuntimeError):
+    """Timeframe khong du dieu kien de chay split tiep theo."""
 
 
 @dataclass(frozen=True)
@@ -33,6 +37,12 @@ class PreparedRun:
     source_result: Path | None
     shortlist_path: Path | None
     shortlist_count: int | None
+
+
+@dataclass(frozen=True)
+class SkippedRun:
+    base: BaseConfig
+    reason: str
 
 
 def project_root() -> Path:
@@ -56,6 +66,16 @@ def load_yaml(path: Path) -> dict[str, Any]:
         if section not in raw:
             raise FolderRunError(f"Thieu block '{section}' trong: {path}")
     return raw
+
+
+def is_base_search_config(path: Path) -> bool:
+    """Chi chay YAML search goc, bo qua YAML da gan frozen shortlist."""
+    try:
+        raw = load_yaml(path)
+    except (OSError, yaml.YAMLError, FolderRunError):
+        return False
+    value = raw.get("search", {}).get("shortlist_file")
+    return value is None or (isinstance(value, str) and not value.strip())
 
 
 def choose_parquet(expected: Path) -> Path:
@@ -89,6 +109,7 @@ def choose_parquet(expected: Path) -> Path:
 
 def load_base_config(config_path: Path) -> BaseConfig:
     raw = load_yaml(config_path)
+
     data_value = str(raw["data"].get("file", "")).strip()
     if not data_value:
         raise FolderRunError(f"data.file rong trong: {config_path}")
@@ -111,13 +132,16 @@ def config_sort_key(path: Path) -> tuple[int, str]:
 
 
 def discover_configs(folder: Path) -> list[Path]:
-    configs = {
+    candidates = {
         path.resolve()
         for pattern in ("search_*.yaml", "search_*.yml")
         for path in folder.rglob(pattern)
         if path.is_file() and not path.name.startswith("_runtime_")
     }
-    return sorted(configs, key=config_sort_key)
+    return sorted(
+        (path for path in candidates if is_base_search_config(path)),
+        key=config_sort_key,
+    )
 
 
 def config_folder_sort_key(item: tuple[Path, int]) -> tuple[int, tuple[int, ...], str]:
@@ -150,7 +174,7 @@ def discover_config_folders(root: Path) -> list[tuple[Path, int]]:
 def choose_config_folder(root: Path) -> Path | None:
     folders = discover_config_folders(root)
     if not folders:
-        raise FolderRunError("Khong tim thay folder con nao trong config co search YAML.")
+        raise FolderRunError("Khong tim thay folder con nao trong config co base search YAML.")
 
     print("Chon folder config:")
     print("-" * 72)
@@ -159,7 +183,7 @@ def choose_config_folder(root: Path) -> Path | None:
             label = folder.relative_to(root)
         except ValueError:
             label = folder
-        print(f"[{index}] {label}  |  {count} YAML")
+        print(f"[{index}] {label}  |  {count} base YAML")
     print("[0] Huy")
 
     while True:
@@ -216,9 +240,8 @@ def read_manifest(result_dir: Path) -> dict[str, Any] | None:
 def find_source_result(base: BaseConfig, source_split: str) -> Path:
     output_root = base.output_root
     if not output_root.is_dir():
-        raise FolderRunError(
-            f"Chua co output folder cho {base.source.name}:\n  {output_root}\n"
-            f"Hay chay {source_split.upper()} truoc."
+        raise SkipRun(
+            f"chua co output {source_split.upper()} trong {output_root}"
         )
 
     wanted_identity = normalized_identity(base.raw)
@@ -239,11 +262,8 @@ def find_source_result(base: BaseConfig, source_split: str) -> Path:
             matches.append(result_dir.resolve())
 
     if not matches:
-        raise FolderRunError(
-            f"Khong tim thay ket qua {source_split.upper()} dung config cho:\n"
-            f"  {base.source}\n"
-            f"Da tim trong:\n  {output_root}\n"
-            "Co the config da thay doi sau khi chay split truoc; hay chay lai split truoc."
+        raise SkipRun(
+            f"khong tim thay ket qua {source_split.upper()} dung config trong {output_root}"
         )
 
     return max(matches, key=lambda path: (path.stat().st_mtime, path.name.lower()))
@@ -258,9 +278,7 @@ def freeze_passing_results(
     passing_file = result_dir / "passing_results.parquet"
     frame = pd.read_parquet(passing_file)
     if frame.empty:
-        raise FolderRunError(
-            f"{result_dir} khong co config passing. Khong the chay {target_split.upper()}."
-        )
+        raise SkipRun(f"{result_dir.name} khong co config passing")
 
     required = {"strategy", "parameters_json"}
     missing = required - set(frame.columns)
@@ -288,6 +306,9 @@ def freeze_passing_results(
         seen.add(key)
         configs.append({"strategy": strategy, "parameters": parameters})
 
+    if not configs:
+        raise SkipRun(f"{result_dir.name} khong co config passing hop le")
+
     generated_dir = root / "config" / "generated" / "folder_runs" / base.source.parent.name
     generated_dir.mkdir(parents=True, exist_ok=True)
     output = generated_dir / (
@@ -308,11 +329,7 @@ def freeze_passing_results(
     return output.resolve(), len(configs)
 
 
-def prepare_run(
-    root: Path,
-    base: BaseConfig,
-    split_name: str,
-) -> PreparedRun:
+def prepare_run(root: Path, base: BaseConfig, split_name: str) -> PreparedRun:
     source_result: Path | None = None
     shortlist_path: Path | None = None
     shortlist_count: int | None = None
@@ -355,6 +372,17 @@ def print_command(command: list[str]) -> None:
     print(f"  {rendered}")
 
 
+def print_skip_summary(skipped: list[SkippedRun]) -> None:
+    if not skipped:
+        return
+    print()
+    print("SKIP - khong du passing/source result:")
+    print("-" * 72)
+    for item in skipped:
+        print(f"  {item.base.source.name}")
+        print(f"      ly do: {item.reason}")
+
+
 def main() -> int:
     root = project_root()
     python_exe = root / ".venv" / "Scripts" / "python.exe"
@@ -368,6 +396,9 @@ def main() -> int:
     print()
 
     prepared: list[PreparedRun] = []
+    skipped: list[SkippedRun] = []
+    completed: list[PreparedRun] = []
+
     try:
         folder = choose_config_folder(root)
         if folder is None:
@@ -382,44 +413,56 @@ def main() -> int:
         configs = discover_configs(folder)
         if not configs:
             raise FolderRunError(
-                f"Khong tim thay search_*.yaml hoac search_*.yml trong:\n  {folder}"
+                f"Khong tim thay base search YAML trong:\n  {folder}"
             )
 
         bases = [load_base_config(config) for config in configs]
 
-        # Preflight toan bo truoc. Neu mot timeframe thieu source result,
-        # khong chay nua chung cac timeframe con lai.
+        # Preflight tung timeframe. Khong co passing/source thi skip,
+        # nhung loi YAML, dataset hoac schema van dung ca batch.
         for base in bases:
-            prepared.append(prepare_run(root, base, split_name))
+            try:
+                prepared.append(prepare_run(root, base, split_name))
+            except SkipRun as exc:
+                skipped.append(SkippedRun(base, str(exc)))
 
         print()
         print(f"Folder : {folder.relative_to(root)}")
         print(f"Split  : {split_name.upper()}")
-        print(f"Config : {len(prepared)}")
+        print(f"RUN    : {len(prepared)}")
+        print(f"SKIP   : {len(skipped)}")
         print("-" * 72)
         for item in prepared:
             try:
                 label = item.base.source.relative_to(root)
             except ValueError:
                 label = item.base.source
-            print(f"  {label}")
-            print(f"      data  : {item.base.data_path}")
-            print(f"      output: {item.base.output_root}")
+            print(f"  [RUN] {label}")
+            print(f"        data  : {item.base.data_path}")
+            print(f"        output: {item.base.output_root}")
             if item.source_result is not None:
-                print(f"      source: {item.source_result}")
-                print(f"      frozen: {item.shortlist_count} config")
+                print(f"        source: {item.source_result}")
+                print(f"        frozen: {item.shortlist_count} config")
+
+        print_skip_summary(skipped)
+
+        if not prepared:
+            print()
+            print(f"Khong co timeframe nao du dieu kien chay {split_name.upper()}.")
+            print("Batch ket thuc an toan.")
+            return 0
 
         print()
         if split_name == "final_oos":
             confirmation = input(
-                "Go OOS de mo khoa va chay FINAL OOS cho toan bo folder: "
+                f"Go OOS de mo khoa va chay FINAL OOS cho {len(prepared)} timeframe: "
             ).strip().upper()
             if confirmation != "OOS":
                 print("Da huy FINAL OOS.")
                 return 0
         else:
             answer = input(
-                f"Chay tat ca tren {split_name.upper()}? [Y/n]: "
+                f"Chay {len(prepared)} timeframe tren {split_name.upper()}? [Y/n]: "
             ).strip().lower()
             if answer in {"n", "no"}:
                 print("Da huy.")
@@ -446,23 +489,28 @@ def main() -> int:
             ]
             if split_name == "final_oos":
                 command.append("--unlock-final-oos")
+
             print("Lenh:")
             print_command(command)
-            completed = subprocess.run(command, cwd=root, check=False)
-            if completed.returncode != 0:
+            result = subprocess.run(command, cwd=root, check=False)
+            if result.returncode != 0:
                 print()
-                print(f"[ERROR] Config failed with exit code {completed.returncode}:")
+                print(f"[ERROR] Config failed with exit code {result.returncode}:")
                 print(f"  {item.base.source}")
                 print("Batch stopped. Checkpoint da hoan thanh van duoc giu lai.")
-                return completed.returncode
+                return result.returncode
+            completed.append(item)
 
         print()
         print("=" * 72)
-        print(f"Da chay xong {len(prepared)} config tren {split_name.upper()}:")
-        print(f"  {folder}")
+        print(f"Da chay xong {len(completed)} config tren {split_name.upper()}.")
+        print(f"Da skip     {len(skipped)} config.")
+        print(f"Folder      {folder}")
         print("=" * 72)
+        print_skip_summary(skipped)
         return 0
-    except (FolderRunError, OSError, ValueError, json.JSONDecodeError) as exc:
+
+    except (FolderRunError, OSError, ValueError, json.JSONDecodeError, yaml.YAMLError) as exc:
         print()
         print(f"[ERROR]\n{exc}")
         print("Runner chua bat dau hoac da dung an toan.")
