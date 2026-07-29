@@ -1,0 +1,2663 @@
+{
+  "source": "results/v0.6_timeframes/h4/validation_46034652cfe6",
+  "source_split": "validation",
+  "target_split": "final_oos",
+  "timeframe": "h4",
+  "number_of_configs": 212,
+  "configs": [
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "bandwidth_lookback": 100,
+        "bb_window": 40,
+        "breakout_lookback": 48,
+        "max_hold_bars": 192,
+        "quantile": 0.2,
+        "risk_reward": 2.0,
+        "side": "long",
+        "squeeze_memory": 6,
+        "std_mult": 1.5
+      }
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "bandwidth_lookback": 100,
+        "bb_window": 40,
+        "breakout_lookback": 48,
+        "max_hold_bars": 192,
+        "quantile": 0.2,
+        "risk_reward": 2.0,
+        "side": "long",
+        "squeeze_memory": 6,
+        "std_mult": 2.0
+      }
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "bandwidth_lookback": 100,
+        "bb_window": 40,
+        "breakout_lookback": 48,
+        "max_hold_bars": 384,
+        "quantile": 0.2,
+        "risk_reward": 2.0,
+        "side": "long",
+        "squeeze_memory": 6,
+        "std_mult": 1.5
+      }
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "bandwidth_lookback": 100,
+        "bb_window": 40,
+        "breakout_lookback": 48,
+        "max_hold_bars": 384,
+        "quantile": 0.2,
+        "risk_reward": 2.0,
+        "side": "long",
+        "squeeze_memory": 6,
+        "std_mult": 2.0
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 192,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 192,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 192,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 192,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 192,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 192,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 192,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 192,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 192,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 192,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 192,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 192,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 96,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 192,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 192,
+        "max_hold_bars": 384,
+        "regime_ema": 200,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 96,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "atr_window": 21,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 384,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 200,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "regime_ema": 100,
+        "risk_reward": 2.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 100,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 384,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 14,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 3.0,
+        "atr_stop_window": 14,
+        "lookback": 96,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 4.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "long"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 192,
+        "max_hold_bars": 192,
+        "regime_ema": 100,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_breakout",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "lookback": 192,
+        "max_hold_bars": 192,
+        "regime_ema": 200,
+        "risk_reward": 3.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "donchian_ema_atr",
+      "parameters": {
+        "atr_stop_multiplier": 4.0,
+        "atr_window": 21,
+        "donchian_window": 48,
+        "ema_window": 100,
+        "max_hold_bars": 192,
+        "risk_reward": 2.0,
+        "side": "both"
+      }
+    },
+    {
+      "strategy": "atr_expansion_breakout",
+      "parameters": {
+        "atr_mean_window": 50,
+        "atr_stop_multiplier": 4.0,
+        "atr_stop_window": 14,
+        "atr_window": 14,
+        "expansion_mult": 1.1,
+        "lookback": 48,
+        "max_hold_bars": 192,
+        "risk_reward": 4.0,
+        "side": "both"
+      }
+    }
+  ]
+}

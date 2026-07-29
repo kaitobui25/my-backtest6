@@ -1,0 +1,104 @@
+# ExactBT v0.6 — breakout and volatility research on BTC M5.
+#
+# Controlled timeframe comparison:
+# - strategy logic and parameter grid are identical across timeframe files;
+# - only the Parquet dataset/timeframe changes;
+# - selection requires expectancy > 0.10R and profit factor >= 1.15;
+# - min_trades is scaled from the M15 baseline by candle duration.
+
+breakout_execution: &breakout_execution
+  atr_stop_window: [14]
+  atr_stop_multiplier: [3.0, 4.0]
+  risk_reward: [2.0, 3.0, 4.0]
+  max_hold_bars: [192, 384]
+  side: [both, long, short]
+
+data:
+  file: ../data/btc/m5/BTCUSD_M5_20200101_20260623_binance_futures.parquet
+  timestamp_column: auto
+  active_split: train
+  splits:
+    train:
+      start: "2021-01-01T00:00:00Z"
+      end: "2024-07-01T00:00:00Z"
+      locked: false
+    validation:
+      start: "2024-07-01T00:00:00Z"
+      end: "2025-07-01T00:00:00Z"
+      locked: false
+    final_oos:
+      start: "2025-07-01T00:00:00Z"
+      end: "2026-07-01T00:00:00Z"
+      locked: true
+
+engine:
+  fee_per_side: 0.0005
+  slippage_per_side: 0.0002
+  cancel_pending_on_new_day: true
+
+search:
+  output_dir: ../results/v0.6_timeframes/m5
+  batch_size: 48
+  num_threads: 0
+  shortlist_file: null
+
+selection:
+  min_expectancy_r: 0.1
+  strict_expectancy: true
+  min_trades: 900
+  min_profit_factor: 1.15
+  max_drawdown_r: null
+  max_cost_share_of_gross_wins: 0.40
+  near_threshold_margin_r: 0.03
+  keep_best_per_strategy: 20
+  detailed_records_max: 150
+  by_split:
+    validation:
+      min_expectancy_r: 0.1
+      strict_expectancy: true
+      min_trades: 240
+      min_profit_factor: 1.15
+    final_oos:
+      min_expectancy_r: 0.1
+      strict_expectancy: true
+      min_trades: 240
+      min_profit_factor: 1.15
+
+strategies:
+  - plugin: exactbt.strategies.trend:DONCHIAN_BREAKOUT_PLUGIN
+    enabled: true
+    parameters:
+      <<: *breakout_execution
+      lookback: [48, 96, 192, 384]
+      regime_ema: [100, 200]
+
+  - plugin: exactbt.strategies.donchian_ema_atr:PLUGIN
+    enabled: true
+    parameters:
+      donchian_window: [48, 96, 192, 384]
+      ema_window: [100, 200]
+      atr_window: [14, 21]
+      atr_stop_multiplier: [3.0, 4.0]
+      risk_reward: [2.0, 3.0, 4.0]
+      max_hold_bars: [192, 384]
+      side: [both, long, short]
+
+  - plugin: exactbt.strategies.volatility:ATR_EXPANSION_BREAKOUT_PLUGIN
+    enabled: true
+    parameters:
+      <<: *breakout_execution
+      atr_window: [14, 21]
+      atr_mean_window: [50, 100]
+      expansion_mult: [1.1, 1.25, 1.5]
+      lookback: [48, 96, 192, 384]
+
+  - plugin: exactbt.strategies.volatility:SQUEEZE_BREAKOUT_PLUGIN
+    enabled: true
+    parameters:
+      <<: *breakout_execution
+      bb_window: [20, 40]
+      std_mult: [1.5, 2.0]
+      bandwidth_lookback: [100, 200]
+      quantile: [0.1, 0.2]
+      squeeze_memory: [3, 6]
+      breakout_lookback: [48, 96, 192]

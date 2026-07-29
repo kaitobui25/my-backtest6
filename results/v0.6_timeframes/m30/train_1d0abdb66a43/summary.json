@@ -1,0 +1,462 @@
+{
+  "manifest": {
+    "engine_version": "exactbt-single-kernel-v1",
+    "config": {
+      "breakout_execution": {
+        "atr_stop_window": [
+          14
+        ],
+        "atr_stop_multiplier": [
+          3.0,
+          4.0
+        ],
+        "risk_reward": [
+          2.0,
+          3.0,
+          4.0
+        ],
+        "max_hold_bars": [
+          192,
+          384
+        ],
+        "side": [
+          "both",
+          "long",
+          "short"
+        ]
+      },
+      "data": {
+        "file": "../data/btc/m30/BTCUSD_M30_20200101_20260622_binance_futures.parquet",
+        "timestamp_column": "auto",
+        "active_split": "train",
+        "splits": {
+          "train": {
+            "start": "2021-01-01T00:00:00Z",
+            "end": "2024-07-01T00:00:00Z",
+            "locked": false
+          },
+          "validation": {
+            "start": "2024-07-01T00:00:00Z",
+            "end": "2025-07-01T00:00:00Z",
+            "locked": false
+          },
+          "final_oos": {
+            "start": "2025-07-01T00:00:00Z",
+            "end": "2026-07-01T00:00:00Z",
+            "locked": true
+          }
+        }
+      },
+      "engine": {
+        "fee_per_side": 0.0005,
+        "slippage_per_side": 0.0002,
+        "cancel_pending_on_new_day": true
+      },
+      "search": {
+        "output_dir": "../results/v0.6_timeframes/m30",
+        "batch_size": 48,
+        "num_threads": 0,
+        "shortlist_file": null
+      },
+      "selection": {
+        "min_expectancy_r": 0.1,
+        "strict_expectancy": true,
+        "min_trades": 150,
+        "min_profit_factor": 1.15,
+        "max_drawdown_r": null,
+        "max_cost_share_of_gross_wins": 0.4,
+        "near_threshold_margin_r": 0.03,
+        "keep_best_per_strategy": 20,
+        "detailed_records_max": 150,
+        "by_split": {
+          "validation": {
+            "min_expectancy_r": 0.1,
+            "strict_expectancy": true,
+            "min_trades": 40,
+            "min_profit_factor": 1.15
+          },
+          "final_oos": {
+            "min_expectancy_r": 0.1,
+            "strict_expectancy": true,
+            "min_trades": 40,
+            "min_profit_factor": 1.15
+          }
+        }
+      },
+      "strategies": [
+        {
+          "plugin": "exactbt.strategies.trend:DONCHIAN_BREAKOUT_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14
+            ],
+            "atr_stop_multiplier": [
+              3.0,
+              4.0
+            ],
+            "risk_reward": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "max_hold_bars": [
+              192,
+              384
+            ],
+            "side": [
+              "both",
+              "long",
+              "short"
+            ],
+            "lookback": [
+              48,
+              96,
+              192,
+              384
+            ],
+            "regime_ema": [
+              100,
+              200
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.donchian_ema_atr:PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "donchian_window": [
+              48,
+              96,
+              192,
+              384
+            ],
+            "ema_window": [
+              100,
+              200
+            ],
+            "atr_window": [
+              14,
+              21
+            ],
+            "atr_stop_multiplier": [
+              3.0,
+              4.0
+            ],
+            "risk_reward": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "max_hold_bars": [
+              192,
+              384
+            ],
+            "side": [
+              "both",
+              "long",
+              "short"
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.volatility:ATR_EXPANSION_BREAKOUT_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14
+            ],
+            "atr_stop_multiplier": [
+              3.0,
+              4.0
+            ],
+            "risk_reward": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "max_hold_bars": [
+              192,
+              384
+            ],
+            "side": [
+              "both",
+              "long",
+              "short"
+            ],
+            "atr_window": [
+              14,
+              21
+            ],
+            "atr_mean_window": [
+              50,
+              100
+            ],
+            "expansion_mult": [
+              1.1,
+              1.25,
+              1.5
+            ],
+            "lookback": [
+              48,
+              96,
+              192,
+              384
+            ]
+          }
+        },
+        {
+          "plugin": "exactbt.strategies.volatility:SQUEEZE_BREAKOUT_PLUGIN",
+          "enabled": true,
+          "parameters": {
+            "atr_stop_window": [
+              14
+            ],
+            "atr_stop_multiplier": [
+              3.0,
+              4.0
+            ],
+            "risk_reward": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "max_hold_bars": [
+              192,
+              384
+            ],
+            "side": [
+              "both",
+              "long",
+              "short"
+            ],
+            "bb_window": [
+              20,
+              40
+            ],
+            "std_mult": [
+              1.5,
+              2.0
+            ],
+            "bandwidth_lookback": [
+              100,
+              200
+            ],
+            "quantile": [
+              0.1,
+              0.2
+            ],
+            "squeeze_memory": [
+              3,
+              6
+            ],
+            "breakout_lookback": [
+              48,
+              96,
+              192
+            ]
+          }
+        }
+      ]
+    },
+    "split_name": "train",
+    "split": {
+      "start": "2021-01-01T00:00:00Z",
+      "end": "2024-07-01T00:00:00Z",
+      "locked": false
+    },
+    "dataset_sha256": "665743d2c92cb17b3336aaff83bc589ee91267a6be47552cbe824ffb4d0e0bbc",
+    "shortlist_sha256": null,
+    "run_id": "train_1d0abdb66a43",
+    "data_file": "C:\\phong\\AI\\finance\\my-backtest6\\minhkhoi\\data\\btc\\m30\\BTCUSD_M30_20200101_20260622_binance_futures.parquet",
+    "candles": 61296,
+    "data_start": "2021-01-01 00:00:00+00:00",
+    "data_end": "2024-06-30 23:30:00+00:00",
+    "numba_threads": 22,
+    "shortlist_file": null,
+    "shortlist_configs": 0,
+    "effective_selection": {
+      "min_expectancy_r": 0.1,
+      "strict_expectancy": true,
+      "min_trades": 150,
+      "min_profit_factor": 1.15,
+      "max_drawdown_r": null,
+      "max_cost_share_of_gross_wins": 0.4,
+      "near_threshold_margin_r": 0.03,
+      "keep_best_per_strategy": 20,
+      "detailed_records_max": 150
+    }
+  },
+  "total_configs": 6048,
+  "eligible_configs": 249,
+  "passing_configs": 242,
+  "near_threshold_configs": 7,
+  "best_config": {
+    "strategy": "atr_expansion_breakout",
+    "strategy_version": "1",
+    "config_id": "205dc42ed9917dcc5ce60f33",
+    "parameters_json": "{\"atr_mean_window\":100,\"atr_stop_multiplier\":3.0,\"atr_stop_window\":14,\"atr_window\":21,\"expansion_mult\":1.1,\"lookback\":384,\"max_hold_bars\":192,\"risk_reward\":3.0,\"side\":\"both\"}",
+    "trades": 163.0,
+    "wins": 65.0,
+    "losses": 98.0,
+    "draws": 0.0,
+    "gross_wins": 65.0,
+    "gross_losses": 98.0,
+    "long_trades": 81.0,
+    "short_trades": 82.0,
+    "signals": 163.0,
+    "invalid_entries": 0.0,
+    "pending_cancelled_new_day": 0.0,
+    "gross_R_total": 77.01486572228322,
+    "cost_R_total": 11.436987410785118,
+    "net_R_total": 65.5778783114981,
+    "expectancy_R": 0.40231827184968155,
+    "gross_expectancy_R": 0.4724838387870136,
+    "avg_cost_R": 0.07016556693733202,
+    "gross_win_rate": 0.3987730061349693,
+    "avg_gross_win_R": 2.6453379628313263,
+    "avg_gross_loss_R": 0.968694916956663,
+    "win_rate": 0.3987730061349693,
+    "avg_win_R": 2.572605249451196,
+    "avg_loss_R": 1.0371577847227507,
+    "profit_factor_R": 1.6451882572193142,
+    "max_drawdown_R": 7.206275762559194,
+    "stop_loss_count": 93.0,
+    "take_profit_count": 51.0,
+    "both_hit_count": 0.0,
+    "stop_gap_count": 0.0,
+    "max_hold_count": 19.0,
+    "end_of_data_count": 0.0,
+    "param_atr_stop_multiplier": 3.0,
+    "param_atr_stop_window": 14.0,
+    "param_lookback": 384.0,
+    "param_max_hold_bars": 192,
+    "param_regime_ema": NaN,
+    "param_risk_reward": 3.0,
+    "param_side": "both",
+    "cost_share_of_gross_wins": 0.06651462117350504,
+    "param_atr_window": 21.0,
+    "param_donchian_window": NaN,
+    "param_ema_window": NaN,
+    "param_atr_mean_window": 100.0,
+    "param_expansion_mult": 1.1,
+    "param_bandwidth_lookback": NaN,
+    "param_bb_window": NaN,
+    "param_breakout_lookback": NaN,
+    "param_quantile": NaN,
+    "param_squeeze_memory": NaN,
+    "param_std_mult": NaN
+  },
+  "best_eligible_config": {
+    "strategy": "atr_expansion_breakout",
+    "strategy_version": "1",
+    "config_id": "205dc42ed9917dcc5ce60f33",
+    "parameters_json": "{\"atr_mean_window\":100,\"atr_stop_multiplier\":3.0,\"atr_stop_window\":14,\"atr_window\":21,\"expansion_mult\":1.1,\"lookback\":384,\"max_hold_bars\":192,\"risk_reward\":3.0,\"side\":\"both\"}",
+    "trades": 163.0,
+    "wins": 65.0,
+    "losses": 98.0,
+    "draws": 0.0,
+    "gross_wins": 65.0,
+    "gross_losses": 98.0,
+    "long_trades": 81.0,
+    "short_trades": 82.0,
+    "signals": 163.0,
+    "invalid_entries": 0.0,
+    "pending_cancelled_new_day": 0.0,
+    "gross_R_total": 77.01486572228322,
+    "cost_R_total": 11.436987410785118,
+    "net_R_total": 65.5778783114981,
+    "expectancy_R": 0.40231827184968155,
+    "gross_expectancy_R": 0.4724838387870136,
+    "avg_cost_R": 0.07016556693733202,
+    "gross_win_rate": 0.3987730061349693,
+    "avg_gross_win_R": 2.6453379628313263,
+    "avg_gross_loss_R": 0.968694916956663,
+    "win_rate": 0.3987730061349693,
+    "avg_win_R": 2.572605249451196,
+    "avg_loss_R": 1.0371577847227507,
+    "profit_factor_R": 1.6451882572193142,
+    "max_drawdown_R": 7.206275762559194,
+    "stop_loss_count": 93.0,
+    "take_profit_count": 51.0,
+    "both_hit_count": 0.0,
+    "stop_gap_count": 0.0,
+    "max_hold_count": 19.0,
+    "end_of_data_count": 0.0,
+    "param_atr_stop_multiplier": 3.0,
+    "param_atr_stop_window": 14.0,
+    "param_lookback": 384.0,
+    "param_max_hold_bars": 192,
+    "param_regime_ema": NaN,
+    "param_risk_reward": 3.0,
+    "param_side": "both",
+    "cost_share_of_gross_wins": 0.06651462117350504,
+    "param_atr_window": 21.0,
+    "param_donchian_window": NaN,
+    "param_ema_window": NaN,
+    "param_atr_mean_window": 100.0,
+    "param_expansion_mult": 1.1,
+    "param_bandwidth_lookback": NaN,
+    "param_bb_window": NaN,
+    "param_breakout_lookback": NaN,
+    "param_quantile": NaN,
+    "param_squeeze_memory": NaN,
+    "param_std_mult": NaN
+  },
+  "best_raw_config": {
+    "strategy": "atr_expansion_breakout",
+    "strategy_version": "1",
+    "config_id": "e7962335d9c7d454c1ca2e2c",
+    "parameters_json": "{\"atr_mean_window\":50,\"atr_stop_multiplier\":3.0,\"atr_stop_window\":14,\"atr_window\":14,\"expansion_mult\":1.5,\"lookback\":384,\"max_hold_bars\":192,\"risk_reward\":4.0,\"side\":\"long\"}",
+    "trades": 38.0,
+    "wins": 16.0,
+    "losses": 22.0,
+    "draws": 0.0,
+    "gross_wins": 16.0,
+    "gross_losses": 22.0,
+    "long_trades": 38.0,
+    "short_trades": 0.0,
+    "signals": 38.0,
+    "invalid_entries": 0.0,
+    "pending_cancelled_new_day": 0.0,
+    "gross_R_total": 33.16461104452641,
+    "cost_R_total": 2.908354916742282,
+    "net_R_total": 30.25625612778413,
+    "expectancy_R": 0.796217266520635,
+    "gross_expectancy_R": 0.8727529222243792,
+    "avg_cost_R": 0.07653565570374427,
+    "gross_win_rate": 0.42105263157894735,
+    "avg_gross_win_R": 3.4058352994995964,
+    "avg_gross_loss_R": 0.9694888067030512,
+    "win_rate": 0.42105263157894735,
+    "avg_win_R": 3.319852787395095,
+    "avg_loss_R": 1.0391540213880628,
+    "profit_factor_R": 2.3234653777384033,
+    "max_drawdown_R": 6.513979332565004,
+    "stop_loss_count": 21.0,
+    "take_profit_count": 11.0,
+    "both_hit_count": 0.0,
+    "stop_gap_count": 0.0,
+    "max_hold_count": 6.0,
+    "end_of_data_count": 0.0,
+    "param_atr_stop_multiplier": 3.0,
+    "param_atr_stop_window": 14.0,
+    "param_lookback": 384.0,
+    "param_max_hold_bars": 192,
+    "param_regime_ema": NaN,
+    "param_risk_reward": 4.0,
+    "param_side": "long",
+    "cost_share_of_gross_wins": 0.05337080813129736,
+    "param_atr_window": 14.0,
+    "param_donchian_window": NaN,
+    "param_ema_window": NaN,
+    "param_atr_mean_window": 50.0,
+    "param_expansion_mult": 1.5,
+    "param_bandwidth_lookback": NaN,
+    "param_bb_window": NaN,
+    "param_breakout_lookback": NaN,
+    "param_quantile": NaN,
+    "param_squeeze_memory": NaN,
+    "param_std_mult": NaN
+  }
+}

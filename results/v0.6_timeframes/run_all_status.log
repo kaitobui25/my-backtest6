@@ -1,0 +1,17 @@
+ExactBT v0.6 all-timeframe TRAIN run
+Started: 2026/07/29  7:08:52.45
+Python: C:\phong\AI\finance\my-backtest6\minhkhoi\.venv\Scripts\python.exe
+PYTHONPATH: C:\phong\AI\finance\my-backtest6\minhkhoi\src
+START M5 - 2026/07/29  7:08:52.50
+DONE M5 - 2026/07/29  7:09:33.03
+START M15 - 2026/07/29  7:09:33.05
+DONE M15 - 2026/07/29  7:10:02.28
+START M30 - 2026/07/29  7:10:02.30
+DONE M30 - 2026/07/29  7:10:35.90
+START H1 - 2026/07/29  7:10:35.92
+DONE H1 - 2026/07/29  7:11:05.58
+START H2 - 2026/07/29  7:11:05.61
+DONE H2 - 2026/07/29  7:11:42.30
+START H4 - 2026/07/29  7:11:42.34
+DONE H4 - 2026/07/29  7:12:24.56
+Finished successfully: 2026/07/29  7:12:24.57
