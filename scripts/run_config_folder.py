@@ -24,11 +24,6 @@ def project_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-def resolve_input_path(root: Path, raw: str) -> Path:
-    path = Path(raw.strip().strip('"')).expanduser()
-    return path.resolve() if path.is_absolute() else (root / path).resolve()
-
-
 def find_data_file_line(text: str, config_path: Path) -> tuple[int, str, str]:
     lines = text.splitlines(keepends=True)
     data_index: int | None = None
@@ -148,6 +143,59 @@ def discover_configs(folder: Path) -> list[Path]:
     return sorted(configs, key=config_sort_key)
 
 
+def config_folder_sort_key(item: tuple[Path, int]) -> tuple[int, tuple[int, ...], str]:
+    folder, _ = item
+    match = re.fullmatch(r"v(\d+(?:\.\d+)*)", folder.name.lower())
+    if match:
+        version = tuple(int(part) for part in match.group(1).split("."))
+        return 1, version, folder.name.lower()
+    return 0, (), folder.name.lower()
+
+
+def discover_config_folders(root: Path) -> list[tuple[Path, int]]:
+    config_root = root / "config"
+    if not config_root.is_dir():
+        raise FolderRunError(f"Khong tim thay folder config: {config_root}")
+
+    found: list[tuple[Path, int]] = []
+    for folder in config_root.iterdir():
+        if not folder.is_dir() or folder.name.startswith("."):
+            continue
+        if folder.name.lower() == "generated":
+            continue
+        count = len(discover_configs(folder))
+        if count:
+            found.append((folder.resolve(), count))
+
+    return sorted(found, key=config_folder_sort_key, reverse=True)
+
+
+def choose_config_folder(root: Path) -> Path | None:
+    folders = discover_config_folders(root)
+    if not folders:
+        raise FolderRunError("Khong tim thay folder con nao trong config co search YAML.")
+
+    print("Chon folder config:")
+    print("-" * 60)
+    for index, (folder, count) in enumerate(folders, start=1):
+        try:
+            label = folder.relative_to(root)
+        except ValueError:
+            label = folder
+        print(f"[{index}] {label}  |  {count} YAML")
+    print("[0] Huy")
+
+    while True:
+        answer = input("Lua chon: ").strip()
+        if answer == "0":
+            return None
+        if answer.isdigit():
+            choice = int(answer)
+            if 1 <= choice <= len(folders):
+                return folders[choice - 1][0]
+        print("Lua chon khong hop le.")
+
+
 def print_command(command: list[str]) -> None:
     rendered = " ".join(f'"{part}"' if " " in part else part for part in command)
     print(f"  {rendered}")
@@ -164,96 +212,89 @@ def main() -> int:
     print("Chay tat ca config YAML trong folder - TRAIN")
     print("=" * 60)
     print()
-    print("Vi du:")
-    print(r"  config\v0.9")
-    print()
 
-    raw_folder = input("Nhap folder config: ").strip()
-    if not raw_folder:
-        print("Folder rong.")
-        return 1
-
-    folder = resolve_input_path(root, raw_folder)
-    if not folder.is_dir():
-        print(f"Khong tim thay folder: {folder}")
-        return 1
-
-    configs = discover_configs(folder)
-    if not configs:
-        print(f"Khong tim thay search_*.yaml hoac search_*.yml trong:\n  {folder}")
-        return 1
-
-    prepared: list[PreparedConfig] = []
     try:
-        for config in configs:
-            prepared.append(prepare_config(root, config))
-
-        print()
-        print(f"Tim thay {len(prepared)} config:")
-        for item in prepared:
-            try:
-                config_label = item.source.relative_to(root)
-            except ValueError:
-                config_label = item.source
-            status = "OK" if not item.temporary else "AUTO-RESOLVED"
-            print(f"  [{status}] {config_label}")
-            print(f"      data: {item.data_path}")
-
-        print()
-        answer = input("Chay tat ca tren TRAIN? [Y/n]: ").strip().lower()
-        if answer in {"n", "no"}:
+        folder = choose_config_folder(root)
+        if folder is None:
             print("Da huy.")
             return 0
 
-        for index, item in enumerate(prepared, start=1):
+        configs = discover_configs(folder)
+        if not configs:
+            print(f"Khong tim thay search_*.yaml hoac search_*.yml trong:\n  {folder}")
+            return 1
+
+        prepared: list[PreparedConfig] = []
+        try:
+            for config in configs:
+                prepared.append(prepare_config(root, config))
+
+            print()
+            print(f"Tim thay {len(prepared)} config:")
+            for item in prepared:
+                try:
+                    config_label = item.source.relative_to(root)
+                except ValueError:
+                    config_label = item.source
+                status = "OK" if not item.temporary else "AUTO-RESOLVED"
+                print(f"  [{status}] {config_label}")
+                print(f"      data: {item.data_path}")
+
+            print()
+            answer = input("Chay tat ca tren TRAIN? [Y/n]: ").strip().lower()
+            if answer in {"n", "no"}:
+                print("Da huy.")
+                return 0
+
+            for index, item in enumerate(prepared, start=1):
+                print()
+                print("=" * 60)
+                print(f"[{index}/{len(prepared)}] {item.source}")
+                print("=" * 60)
+                if item.temporary:
+                    print("Config khai bao sai ten file; dang dung config runtime:")
+                    print(f"  {item.run_path}")
+                    print("Dataset thuc te:")
+                    print(f"  {item.data_path}")
+
+                command = [
+                    str(python_exe),
+                    "-m",
+                    "exactbt.cli",
+                    "search",
+                    "--config",
+                    str(item.run_path),
+                    "--split",
+                    "train",
+                ]
+                print("Lenh:")
+                print_command(command)
+                completed = subprocess.run(command, cwd=root, check=False)
+                if completed.returncode != 0:
+                    print()
+                    print(f"[ERROR] Config failed with exit code {completed.returncode}:")
+                    print(f"  {item.source}")
+                    print("Batch stopped. Checkpoint da hoan thanh van duoc giu lai.")
+                    return completed.returncode
+
             print()
             print("=" * 60)
-            print(f"[{index}/{len(prepared)}] {item.source}")
+            print(f"Da chay xong {len(prepared)} config trong folder:")
+            print(f"  {folder}")
             print("=" * 60)
-            if item.temporary:
-                print("Config khai bao sai ten file; dang dung config runtime:")
-                print(f"  {item.run_path}")
-                print("Dataset thuc te:")
-                print(f"  {item.data_path}")
-
-            command = [
-                str(python_exe),
-                "-m",
-                "exactbt.cli",
-                "search",
-                "--config",
-                str(item.run_path),
-                "--split",
-                "train",
-            ]
-            print("Lenh:")
-            print_command(command)
-            completed = subprocess.run(command, cwd=root, check=False)
-            if completed.returncode != 0:
-                print()
-                print(f"[ERROR] Config failed with exit code {completed.returncode}:")
-                print(f"  {item.source}")
-                print("Batch stopped. Checkpoint da hoan thanh van duoc giu lai.")
-                return completed.returncode
-
-        print()
-        print("=" * 60)
-        print(f"Da chay xong {len(prepared)} config trong folder:")
-        print(f"  {folder}")
-        print("=" * 60)
-        return 0
+            return 0
+        finally:
+            for item in prepared:
+                if item.temporary:
+                    try:
+                        item.run_path.unlink(missing_ok=True)
+                    except OSError:
+                        pass
     except (FolderRunError, OSError) as exc:
         print()
         print(f"[DATA ERROR]\n{exc}")
         print("Runner chua bat dau; khong co config nao bi chay nua chung.")
         return 1
-    finally:
-        for item in prepared:
-            if item.temporary:
-                try:
-                    item.run_path.unlink(missing_ok=True)
-                except OSError:
-                    pass
 
 
 if __name__ == "__main__":
