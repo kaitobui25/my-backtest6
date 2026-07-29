@@ -91,6 +91,15 @@ set "CONFIRM="
 set /p "CONFIRM=Chay tat ca tren TRAIN? [Y/n]: "
 if /i "%CONFIRM%"=="n" goto :MENU
 
+rem Kiem tra va tao alias cho dataset theo tung folder timeframe.
+rem Moi folder data\btc\<timeframe> chi nen co mot file parquet goc.
+for %%T in (m5 m15 m30 h1 h2 h4 d1) do (
+    if exist "data\btc\%%T\" (
+        call :RESOLVE_DATA_FOLDER %%T
+        if errorlevel 1 goto :DATA_ERROR
+    )
+)
+
 set /a CURRENT=0
 for /r "%CONFIG_DIR%" %%F in (search_*.yaml search_*.yml) do (
     if exist "%%~fF" (
@@ -123,3 +132,64 @@ echo ============================================================
 echo.
 pause
 exit /b 0
+
+:RESOLVE_DATA_FOLDER
+set "TF=%~1"
+set "DATA_DIR=data\btc\%TF%"
+set "FOUND_FILE="
+set /a FILE_COUNT=0
+
+for %%F in ("%DATA_DIR%\*.parquet") do (
+    if exist "%%~fF" (
+        set /a FILE_COUNT+=1
+        set "FOUND_FILE=%%~fF"
+    )
+)
+
+if !FILE_COUNT! EQU 0 (
+    echo [DATA ERROR] Khong co parquet trong: %DATA_DIR%
+    exit /b 1
+)
+
+rem Neu da co nhieu file do alias tu lan chay truoc thi uu tien file co ngay moi nhat.
+if !FILE_COUNT! GTR 1 (
+    set "FOUND_FILE="
+    for /f "delims=" %%F in ('dir /b /a-d /o-d "%DATA_DIR%\*.parquet" 2^>nul') do (
+        if not defined FOUND_FILE set "FOUND_FILE=%CD%\%DATA_DIR%\%%F"
+    )
+)
+
+if not defined FOUND_FILE (
+    echo [DATA ERROR] Khong xac dinh duoc parquet trong: %DATA_DIR%
+    exit /b 1
+)
+
+set "TF_UPPER=%TF%"
+for %%A in (m5=M5 m15=M15 m30=M30 h1=H1 h2=H2 h4=H4 d1=D1) do (
+    for /f "tokens=1,2 delims==" %%B in ("%%A") do if /i "%TF%"=="%%B" set "TF_UPPER=%%C"
+)
+
+for %%N in (
+    "BTCUSD_!TF_UPPER!_20200101_20260623_binance_futures.parquet"
+    "BTCUSD_!TF_UPPER!_20200101_20260622_binance_futures.parquet"
+) do (
+    set "ALIAS_PATH=%DATA_DIR%\%%~N"
+    if not exist "!ALIAS_PATH!" (
+        fsutil hardlink create "!ALIAS_PATH!" "!FOUND_FILE!" >nul 2>&1
+        if errorlevel 1 copy /Y "!FOUND_FILE!" "!ALIAS_PATH!" >nul
+        if errorlevel 1 (
+            echo [DATA ERROR] Khong tao duoc alias dataset:
+            echo   Source: !FOUND_FILE!
+            echo   Target: !ALIAS_PATH!
+            exit /b 1
+        )
+    )
+)
+
+exit /b 0
+
+:DATA_ERROR
+echo.
+echo Dataset preflight failed. Runner chua duoc bat dau.
+pause
+exit /b 1
