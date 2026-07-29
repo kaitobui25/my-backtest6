@@ -10,6 +10,9 @@ if not exist ".venv\Scripts\python.exe" (
     exit /b 1
 )
 
+rem Dam bao package src\exactbt duoc tim thay ke ca khi editable install bi mat sau git pull/merge.
+set "PYTHONPATH=%CD%\src;%PYTHONPATH%"
+
 ".venv\Scripts\python.exe" "scripts\research_runner.py"
 set "EXIT_CODE=%ERRORLEVEL%"
 
