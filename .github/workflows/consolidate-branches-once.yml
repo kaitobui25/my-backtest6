@@ -1,0 +1,53 @@
+name: Consolidate branches once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/consolidate-branches-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge remaining history and remove extra branches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          git checkout -B main origin/main
+
+          # v0.3 contains obsolete generated-result changes that conflict with the
+          # newer v0.4-v0.8 tree. Record its history as merged while keeping the
+          # current main tree, which already contains the newer implementation.
+          legacy_branch='research/exactbt-v03'
+          if git show-ref --verify --quiet "refs/remotes/origin/${legacy_branch}"; then
+            if ! git merge-base --is-ancestor "origin/${legacy_branch}" HEAD; then
+              git merge --no-ff -s ours "origin/${legacy_branch}" \
+                -m 'Merge legacy ExactBT v0.3 history into main'
+            fi
+          fi
+
+          # Remove this one-shot workflow from the final repository state.
+          git rm --quiet .github/workflows/consolidate-branches-once.yml
+          git commit -m 'Complete one-branch repository consolidation'
+          git push origin main
+
+          # Delete every remote branch except main.
+          while IFS= read -r branch; do
+            if [[ -n "${branch}" && "${branch}" != 'main' && "${branch}" != 'HEAD' ]]; then
+              git push origin --delete "${branch}"
+            fi
+          done < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin/ | sort -u)
