@@ -117,6 +117,19 @@ strategies:
       pullback_lookback: [2, 4, 8]
       require_di: [false, true]
 
+  # Trend continuation don gian: EMA co do doc dung huong, gia quay lai gan EMA roi bat lai.
+  # Nhom nay bo ADX nen thuong co nhieu lenh hon ADX pullback.
+  # ema_window 20/50 nhay va nhieu trade; 100/200 cham va it nhieu hon.
+  # pullback_atr 0.25 chat, 1.0 rong; neu PF thap hay bo 1.0 truoc.
+  - plugin: exactbt.strategies.trend:EMA_SLOPE_PULLBACK_PLUGIN
+    enabled: true
+    parameters:
+      <<: *pullback_execution
+      ema_window: [20, 50, 100, 200]
+      slope_lookback: [4, 8, 16]
+      atr_window: [14, 21]
+      pullback_atr: [0.25, 0.50, 0.75, 1.00]
+
   # Trend breakout: dong cua vuot bien rolling range va cung huong EMA regime.
   # Lookback 16-32 tao nhieu lenh; 48-96 giu nhom breakout cham de doi chieu.
   # Buffer 0.0 bat som; 0.10/0.25 ATR giam false breakout.
