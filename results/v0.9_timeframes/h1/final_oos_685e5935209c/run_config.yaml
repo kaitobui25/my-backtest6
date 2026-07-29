@@ -1,0 +1,170 @@
+pullback_execution:
+  atr_stop_window: &id001
+  - 14
+  atr_stop_multiplier: &id002
+  - 1.5
+  - 2.0
+  - 2.5
+  risk_reward: &id003
+  - 1.5
+  - 2.0
+  - 2.5
+  max_hold_bars: &id004
+  - 32
+  - 64
+  - 96
+  side: &id005
+  - both
+  - long
+  - short
+breakout_execution:
+  atr_stop_window: &id006
+  - 14
+  atr_stop_multiplier: &id007
+  - 1.5
+  - 2.0
+  - 2.5
+  risk_reward: &id008
+  - 1.5
+  - 2.0
+  - 2.5
+  - 3.0
+  max_hold_bars: &id009
+  - 32
+  - 64
+  - 96
+  - 192
+  side: &id010
+  - both
+  - long
+  - short
+data:
+  file: C:\phong\AI\finance\my-backtest6\minhkhoi\data\btc\h1\BTCUSD_H1_20200101_20260622_binance_futures.parquet
+  timestamp_column: auto
+  active_split: final_oos
+  splits:
+    train:
+      start: '2021-01-01T00:00:00Z'
+      end: '2024-07-01T00:00:00Z'
+      locked: false
+    validation:
+      start: '2024-07-01T00:00:00Z'
+      end: '2025-07-01T00:00:00Z'
+      locked: false
+    final_oos:
+      start: '2025-07-01T00:00:00Z'
+      end: '2026-07-01T00:00:00Z'
+      locked: true
+engine:
+  fee_per_side: 0.0005
+  slippage_per_side: 0.0002
+  cancel_pending_on_new_day: true
+search:
+  output_dir: C:\phong\AI\finance\my-backtest6\minhkhoi\results\v0.9_timeframes\h1
+  batch_size: 96
+  num_threads: 0
+  shortlist_file: C:\phong\AI\finance\my-backtest6\minhkhoi\config\generated\folder_runs\v0.9\frozen_search_v0.9_trend_following_h1__validation_e8584a7b2482__to_final_oos.json
+selection:
+  min_trades: 158
+  min_expectancy_r: 0.08
+  strict_expectancy: true
+  min_profit_factor: 1.15
+  max_drawdown_r: 35
+  max_cost_share_of_gross_wins: 0.45
+  near_threshold_margin_r: 0.03
+  keep_best_per_strategy: 40
+  detailed_records_max: 300
+  by_split:
+    validation:
+      min_trades: 45
+      min_expectancy_r: 0.0
+      strict_expectancy: true
+      min_profit_factor: 1.1
+      max_drawdown_r: 20
+    final_oos:
+      min_trades: 45
+      min_expectancy_r: 0.0
+      strict_expectancy: true
+      min_profit_factor: 1.1
+      max_drawdown_r: 20
+strategies:
+- plugin: exactbt.strategies.research:ADX_EMA_PULLBACK_PLUGIN
+  enabled: true
+  parameters:
+    atr_stop_window: *id001
+    atr_stop_multiplier: *id002
+    risk_reward: *id003
+    max_hold_bars: *id004
+    side: *id005
+    fast_ema:
+    - 10
+    - 20
+    - 50
+    slow_ema:
+    - 100
+    - 200
+    adx_window:
+    - 14
+    adx_threshold:
+    - 12
+    - 15
+    - 18
+    - 22
+    pullback_lookback:
+    - 2
+    - 4
+    - 8
+    require_di:
+    - false
+    - true
+- plugin: exactbt.strategies.trend:EMA_SLOPE_PULLBACK_PLUGIN
+  enabled: true
+  parameters:
+    atr_stop_window: *id001
+    atr_stop_multiplier: *id002
+    risk_reward: *id003
+    max_hold_bars: *id004
+    side: *id005
+    ema_window:
+    - 20
+    - 50
+    - 100
+    - 200
+    slope_lookback:
+    - 4
+    - 8
+    - 16
+    atr_window:
+    - 14
+    - 21
+    pullback_atr:
+    - 0.25
+    - 0.5
+    - 0.75
+    - 1.0
+- plugin: exactbt.strategies.trend:ROLLING_RANGE_BREAKOUT_PLUGIN
+  enabled: true
+  parameters:
+    atr_stop_window: *id006
+    atr_stop_multiplier: *id007
+    risk_reward: *id008
+    max_hold_bars: *id009
+    side: *id010
+    lookback:
+    - 16
+    - 24
+    - 32
+    - 48
+    - 72
+    - 96
+    atr_window:
+    - 14
+    - 21
+    breakout_atr_buffer:
+    - 0.0
+    - 0.1
+    - 0.25
+    regime_ema:
+    - 50
+    - 100
+    - 200

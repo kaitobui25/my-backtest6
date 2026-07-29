@@ -1,0 +1,305 @@
+{
+  "engine_version": "exactbt-single-kernel-v1",
+  "config": {
+    "pullback_execution": {
+      "atr_stop_window": [
+        14
+      ],
+      "atr_stop_multiplier": [
+        1.5,
+        2.0,
+        2.5
+      ],
+      "risk_reward": [
+        1.5,
+        2.0,
+        2.5
+      ],
+      "max_hold_bars": [
+        32,
+        64,
+        96
+      ],
+      "side": [
+        "both",
+        "long",
+        "short"
+      ]
+    },
+    "breakout_execution": {
+      "atr_stop_window": [
+        14
+      ],
+      "atr_stop_multiplier": [
+        1.5,
+        2.0,
+        2.5
+      ],
+      "risk_reward": [
+        1.5,
+        2.0,
+        2.5,
+        3.0
+      ],
+      "max_hold_bars": [
+        32,
+        64,
+        96,
+        192
+      ],
+      "side": [
+        "both",
+        "long",
+        "short"
+      ]
+    },
+    "data": {
+      "file": "C:\\phong\\AI\\finance\\my-backtest6\\minhkhoi\\data\\btc\\h1\\BTCUSD_H1_20200101_20260622_binance_futures.parquet",
+      "timestamp_column": "auto",
+      "active_split": "validation",
+      "splits": {
+        "train": {
+          "start": "2021-01-01T00:00:00Z",
+          "end": "2024-07-01T00:00:00Z",
+          "locked": false
+        },
+        "validation": {
+          "start": "2024-07-01T00:00:00Z",
+          "end": "2025-07-01T00:00:00Z",
+          "locked": false
+        },
+        "final_oos": {
+          "start": "2025-07-01T00:00:00Z",
+          "end": "2026-07-01T00:00:00Z",
+          "locked": true
+        }
+      }
+    },
+    "engine": {
+      "fee_per_side": 0.0005,
+      "slippage_per_side": 0.0002,
+      "cancel_pending_on_new_day": true
+    },
+    "search": {
+      "output_dir": "C:\\phong\\AI\\finance\\my-backtest6\\minhkhoi\\results\\v0.9_timeframes\\h1",
+      "batch_size": 96,
+      "num_threads": 0,
+      "shortlist_file": "C:\\phong\\AI\\finance\\my-backtest6\\minhkhoi\\config\\generated\\folder_runs\\v0.9\\frozen_search_v0.9_trend_following_h1__train_dfb3d2e867b6__to_validation.json"
+    },
+    "selection": {
+      "min_trades": 158,
+      "min_expectancy_r": 0.08,
+      "strict_expectancy": true,
+      "min_profit_factor": 1.15,
+      "max_drawdown_r": 35,
+      "max_cost_share_of_gross_wins": 0.45,
+      "near_threshold_margin_r": 0.03,
+      "keep_best_per_strategy": 40,
+      "detailed_records_max": 300,
+      "by_split": {
+        "validation": {
+          "min_trades": 45,
+          "min_expectancy_r": 0.0,
+          "strict_expectancy": true,
+          "min_profit_factor": 1.1,
+          "max_drawdown_r": 20
+        },
+        "final_oos": {
+          "min_trades": 45,
+          "min_expectancy_r": 0.0,
+          "strict_expectancy": true,
+          "min_profit_factor": 1.1,
+          "max_drawdown_r": 20
+        }
+      }
+    },
+    "strategies": [
+      {
+        "plugin": "exactbt.strategies.research:ADX_EMA_PULLBACK_PLUGIN",
+        "enabled": true,
+        "parameters": {
+          "atr_stop_window": [
+            14
+          ],
+          "atr_stop_multiplier": [
+            1.5,
+            2.0,
+            2.5
+          ],
+          "risk_reward": [
+            1.5,
+            2.0,
+            2.5
+          ],
+          "max_hold_bars": [
+            32,
+            64,
+            96
+          ],
+          "side": [
+            "both",
+            "long",
+            "short"
+          ],
+          "fast_ema": [
+            10,
+            20,
+            50
+          ],
+          "slow_ema": [
+            100,
+            200
+          ],
+          "adx_window": [
+            14
+          ],
+          "adx_threshold": [
+            12,
+            15,
+            18,
+            22
+          ],
+          "pullback_lookback": [
+            2,
+            4,
+            8
+          ],
+          "require_di": [
+            false,
+            true
+          ]
+        }
+      },
+      {
+        "plugin": "exactbt.strategies.trend:EMA_SLOPE_PULLBACK_PLUGIN",
+        "enabled": true,
+        "parameters": {
+          "atr_stop_window": [
+            14
+          ],
+          "atr_stop_multiplier": [
+            1.5,
+            2.0,
+            2.5
+          ],
+          "risk_reward": [
+            1.5,
+            2.0,
+            2.5
+          ],
+          "max_hold_bars": [
+            32,
+            64,
+            96
+          ],
+          "side": [
+            "both",
+            "long",
+            "short"
+          ],
+          "ema_window": [
+            20,
+            50,
+            100,
+            200
+          ],
+          "slope_lookback": [
+            4,
+            8,
+            16
+          ],
+          "atr_window": [
+            14,
+            21
+          ],
+          "pullback_atr": [
+            0.25,
+            0.5,
+            0.75,
+            1.0
+          ]
+        }
+      },
+      {
+        "plugin": "exactbt.strategies.trend:ROLLING_RANGE_BREAKOUT_PLUGIN",
+        "enabled": true,
+        "parameters": {
+          "atr_stop_window": [
+            14
+          ],
+          "atr_stop_multiplier": [
+            1.5,
+            2.0,
+            2.5
+          ],
+          "risk_reward": [
+            1.5,
+            2.0,
+            2.5,
+            3.0
+          ],
+          "max_hold_bars": [
+            32,
+            64,
+            96,
+            192
+          ],
+          "side": [
+            "both",
+            "long",
+            "short"
+          ],
+          "lookback": [
+            16,
+            24,
+            32,
+            48,
+            72,
+            96
+          ],
+          "atr_window": [
+            14,
+            21
+          ],
+          "breakout_atr_buffer": [
+            0.0,
+            0.1,
+            0.25
+          ],
+          "regime_ema": [
+            50,
+            100,
+            200
+          ]
+        }
+      }
+    ]
+  },
+  "split_name": "validation",
+  "split": {
+    "start": "2024-07-01T00:00:00Z",
+    "end": "2025-07-01T00:00:00Z",
+    "locked": false
+  },
+  "dataset_sha256": "1eec0c9090b7dbc3de8c5fb0e4bd1c7b67c4cc8ddb610599095b902fbd6e7502",
+  "shortlist_sha256": "2a08e5e0c68b9f33386ea858a36655ae787d5a1459ccc97e4c763518b65eee31",
+  "run_id": "validation_e8584a7b2482",
+  "data_file": "C:\\phong\\AI\\finance\\my-backtest6\\minhkhoi\\data\\btc\\h1\\BTCUSD_H1_20200101_20260622_binance_futures.parquet",
+  "candles": 8760,
+  "data_start": "2024-07-01 00:00:00+00:00",
+  "data_end": "2025-06-30 23:00:00+00:00",
+  "numba_threads": 22,
+  "shortlist_file": "C:\\phong\\AI\\finance\\my-backtest6\\minhkhoi\\config\\generated\\folder_runs\\v0.9\\frozen_search_v0.9_trend_following_h1__train_dfb3d2e867b6__to_validation.json",
+  "shortlist_configs": 836,
+  "effective_selection": {
+    "min_trades": 45,
+    "min_expectancy_r": 0.0,
+    "strict_expectancy": true,
+    "min_profit_factor": 1.1,
+    "max_drawdown_r": 20,
+    "max_cost_share_of_gross_wins": 0.45,
+    "near_threshold_margin_r": 0.03,
+    "keep_best_per_strategy": 40,
+    "detailed_records_max": 300
+  }
+}
