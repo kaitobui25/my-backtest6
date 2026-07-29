@@ -1,0 +1,152 @@
+//@version=6
+strategy(
+    "ExactBT ATR Expansion Breakout",
+    overlay = true,
+    pyramiding = 0,
+    initial_capital = 10000,
+    default_qty_type = strategy.percent_of_equity,
+    default_qty_value = 100,
+    commission_type = strategy.commission.percent,
+    commission_value = 0.05,
+    process_orders_on_close = false,
+    calc_on_order_fills = true,
+    calc_on_every_tick = false,
+    use_bar_magnifier = false,
+    margin_long = 100,
+    margin_short = 100
+)
+
+// Port of exactbt.strategies.volatility:ATR_EXPANSION_BREAKOUT_PLUGIN.
+// Defaults reproduce the requested ExactBT configuration.
+// Important limitation: ExactBT resolves an SL+TP hit on the same candle as SL.
+// TradingView resolves intrabar order sequence with its broker emulator (or Bar Magnifier),
+// so a small number of trades can differ even when the signal logic is identical.
+
+// -----------------------------------------------------------------------------
+// Inputs
+// -----------------------------------------------------------------------------
+int atrMeanWindow = input.int(50, "ATR mean window", minval = 2)
+int atrWindow = input.int(14, "Signal ATR window", minval = 2)
+int atrStopWindow = input.int(14, "Stop ATR window", minval = 2)
+float atrStopMultiplier = input.float(4.0, "ATR stop multiplier", minval = 0.1, step = 0.25)
+float expansionMultiplier = input.float(1.25, "ATR expansion multiplier", minval = 0.1, step = 0.05)
+int breakoutLookback = input.int(192, "Breakout lookback", minval = 2)
+int maximumHoldBars = input.int(384, "Maximum hold bars", minval = 1)
+float riskReward = input.float(4.0, "Risk / reward", minval = 0.1, step = 0.25)
+string side = input.string("Both", "Side", options = ["Both", "Long only", "Short only"])
+bool cancelAcrossUtcDay = input.bool(true, "Cancel signal if next open is a new UTC day")
+bool showLevels = input.bool(true, "Show breakout / SL / TP levels")
+bool showExpansion = input.bool(true, "Highlight ATR expansion")
+
+// -----------------------------------------------------------------------------
+// ExactBT-compatible helpers
+// -----------------------------------------------------------------------------
+// pandas ewm(alpha = 1 / length, adjust = false, min_periods = length)
+// ExactBT uses this definition instead of Pine's default ATR seeding.
+f_exact_atr(int length) =>
+    float trueRange = ta.tr(true)
+    float ewma = na
+    ewma := na(ewma[1]) ? trueRange : ewma[1] + (trueRange - ewma[1]) / length
+    bar_index >= length - 1 ? ewma : na
+
+f_same_utc_date(int firstTime, int secondTime) =>
+    year(firstTime, "UTC+0") == year(secondTime, "UTC+0") and
+     month(firstTime, "UTC+0") == month(secondTime, "UTC+0") and
+     dayofmonth(firstTime, "UTC+0") == dayofmonth(secondTime, "UTC+0")
+
+// -----------------------------------------------------------------------------
+// Signal logic
+// -----------------------------------------------------------------------------
+float signalAtr = f_exact_atr(atrWindow)
+float stopAtr = f_exact_atr(atrStopWindow)
+float atrMean = ta.sma(signalAtr, atrMeanWindow)
+bool atrExpanded = signalAtr > atrMean * expansionMultiplier
+
+// ExactBT's rolling channels contain the previous N candles only.
+float priorUpper = ta.highest(high, breakoutLookback)[1]
+float priorLower = ta.lowest(low, breakoutLookback)[1]
+
+// ExactBT crossed_above / crossed_below definitions.
+bool longCross = close > priorUpper and close[1] <= priorUpper[1]
+bool shortCross = close < priorLower and close[1] >= priorLower[1]
+bool longSignal = longCross and atrExpanded
+bool shortSignal = shortCross and atrExpanded
+
+bool allowLong = side == "Both" or side == "Long only"
+bool allowShort = side == "Both" or side == "Short only"
+bool nextOpenSameUtcDay = f_same_utc_date(time, time_close)
+bool pendingAllowed = not cancelAcrossUtcDay or nextOpenSameUtcDay
+
+// -----------------------------------------------------------------------------
+// Position state
+// -----------------------------------------------------------------------------
+var float pendingStopDistance = na
+var int activeEntryBar = na
+var float activeStop = na
+var float activeTarget = na
+var int lastExitBar = na
+var int observedClosedTrades = 0
+
+// Prevent re-entry on the same chart candle after an intrabar exit.
+if strategy.closedtrades > observedClosedTrades
+    observedClosedTrades := strategy.closedtrades
+    lastExitBar := bar_index
+    activeEntryBar := na
+    activeStop := na
+    activeTarget := na
+    pendingStopDistance := na
+
+bool flat = strategy.position_size == 0
+bool noSameBarReentry = na(lastExitBar) or bar_index > lastExitBar
+bool validStopDistance = not na(stopAtr) and stopAtr > 0
+bool canCreateEntry = flat and noSameBarReentry and pendingAllowed and validStopDistance
+
+if canCreateEntry
+    if longSignal and allowLong and not shortSignal
+        pendingStopDistance := stopAtr * atrStopMultiplier
+        strategy.entry("Long", strategy.long, comment = "ATR expansion long")
+    else if shortSignal and allowShort and not longSignal
+        pendingStopDistance := stopAtr * atrStopMultiplier
+        strategy.entry("Short", strategy.short, comment = "ATR expansion short")
+
+// calc_on_order_fills lets the strategy obtain the actual next-open fill price and
+// place SL/TP orders during the entry candle, matching ExactBT's entry-bar checks.
+if strategy.position_size != 0 and na(activeEntryBar)
+    activeEntryBar := bar_index
+    float distance = pendingStopDistance
+    if strategy.position_size > 0
+        activeStop := strategy.position_avg_price - distance
+        activeTarget := strategy.position_avg_price + distance * riskReward
+    else
+        activeStop := strategy.position_avg_price + distance
+        activeTarget := strategy.position_avg_price - distance * riskReward
+
+if strategy.position_size > 0 and not na(activeStop) and not na(activeTarget)
+    strategy.exit("Long SL/TP", from_entry = "Long", stop = activeStop, limit = activeTarget)
+
+if strategy.position_size < 0 and not na(activeStop) and not na(activeTarget)
+    strategy.exit("Short SL/TP", from_entry = "Short", stop = activeStop, limit = activeTarget)
+
+// ExactBT closes a surviving position at the current candle close when the hold
+// limit is reached. `immediately = true` avoids moving that exit to the next open.
+bool holdExpired = strategy.position_size != 0 and not na(activeEntryBar) and bar_index - activeEntryBar >= maximumHoldBars
+if holdExpired
+    if strategy.position_size > 0
+        strategy.close("Long", comment = "Maximum hold", immediately = true)
+    else
+        strategy.close("Short", comment = "Maximum hold", immediately = true)
+
+// -----------------------------------------------------------------------------
+// Visuals and alert conditions
+// -----------------------------------------------------------------------------
+plot(showLevels ? priorUpper : na, "Prior rolling high", color = color.new(color.green, 20), linewidth = 1)
+plot(showLevels ? priorLower : na, "Prior rolling low", color = color.new(color.red, 20), linewidth = 1)
+plot(showLevels and strategy.position_size != 0 ? activeStop : na, "Stop", color = color.red, linewidth = 2, style = plot.style_linebr)
+plot(showLevels and strategy.position_size != 0 ? activeTarget : na, "Target", color = color.green, linewidth = 2, style = plot.style_linebr)
+bgcolor(showExpansion and atrExpanded ? color.new(color.orange, 90) : na, title = "ATR expanded")
+
+plotshape(longSignal and allowLong and pendingAllowed, title = "Long signal", style = shape.triangleup, location = location.belowbar, color = color.lime, size = size.tiny, text = "L")
+plotshape(shortSignal and allowShort and pendingAllowed, title = "Short signal", style = shape.triangledown, location = location.abovebar, color = color.red, size = size.tiny, text = "S")
+
+alertcondition(longSignal and allowLong and pendingAllowed, "ATR expansion long", "ATR expansion breakout LONG on {{ticker}} {{interval}}")
+alertcondition(shortSignal and allowShort and pendingAllowed, "ATR expansion short", "ATR expansion breakout SHORT on {{ticker}} {{interval}}")
