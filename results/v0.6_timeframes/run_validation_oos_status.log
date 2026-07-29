@@ -1,34 +1,34 @@
 ExactBT v0.6 all-timeframe VALIDATION and FINAL OOS
-Started: 2026/07/14  0:18:49.40
+Started: 2026/07/29  7:12:56.61
 Python: C:\phong\AI\finance\my-backtest6\minhkhoi\.venv\Scripts\python.exe
 PYTHONPATH: C:\phong\AI\finance\my-backtest6\minhkhoi\src
-2026-07-14T00:18:51+09:00 PHASE START validation
-2026-07-14T00:18:51+09:00 START M5 train->validation
-2026-07-14T00:18:51+09:00 SKIP M5 train_2f31d4c4dd05 has zero passing configs
-2026-07-14T00:18:51+09:00 START M15 train->validation
-2026-07-14T00:19:05+09:00 DONE M15 validation configs=20
-2026-07-14T00:19:05+09:00 START M30 train->validation
-2026-07-14T00:19:22+09:00 DONE M30 validation configs=242
-2026-07-14T00:19:22+09:00 START H1 train->validation
-2026-07-14T00:19:46+09:00 DONE H1 validation configs=684
-2026-07-14T00:19:46+09:00 START H2 train->validation
-2026-07-14T00:20:19+09:00 DONE H2 validation configs=860
-2026-07-14T00:20:19+09:00 START H4 train->validation
-2026-07-14T00:20:50+09:00 DONE H4 validation configs=408
-2026-07-14T00:20:50+09:00 PHASE DONE validation completed=5 skipped=1
-FINAL OOS unlocked: 2026/07/14  0:21:08.70
-2026-07-14T00:21:09+09:00 PHASE START final_oos
-2026-07-14T00:21:09+09:00 START M5 validation->final_oos
-2026-07-14T00:21:09+09:00 SKIP M5 no completed validation result
-2026-07-14T00:21:09+09:00 START M15 validation->final_oos
-2026-07-14T00:21:21+09:00 DONE M15 final_oos configs=9
-2026-07-14T00:21:21+09:00 START M30 validation->final_oos
-2026-07-14T00:21:33+09:00 DONE M30 final_oos configs=34
-2026-07-14T00:21:33+09:00 START H1 validation->final_oos
-2026-07-14T00:21:56+09:00 DONE H1 final_oos configs=237
-2026-07-14T00:21:56+09:00 START H2 validation->final_oos
-2026-07-14T00:22:17+09:00 DONE H2 final_oos configs=364
-2026-07-14T00:22:17+09:00 START H4 validation->final_oos
-2026-07-14T00:22:38+09:00 DONE H4 final_oos configs=212
-2026-07-14T00:22:38+09:00 PHASE DONE final_oos completed=5 skipped=1
-Finished successfully: 2026/07/14  0:22:38.89
+2026-07-29T07:12:57+09:00 PHASE START validation
+2026-07-29T07:12:57+09:00 START M5 train->validation
+2026-07-29T07:12:58+09:00 SKIP M5 train_2f31d4c4dd05 has zero passing configs
+2026-07-29T07:12:58+09:00 START M15 train->validation
+2026-07-29T07:13:11+09:00 DONE M15 validation configs=20
+2026-07-29T07:13:11+09:00 START M30 train->validation
+2026-07-29T07:13:36+09:00 DONE M30 validation configs=242
+2026-07-29T07:13:36+09:00 START H1 train->validation
+2026-07-29T07:14:02+09:00 DONE H1 validation configs=684
+2026-07-29T07:14:02+09:00 START H2 train->validation
+2026-07-29T07:14:25+09:00 DONE H2 validation configs=860
+2026-07-29T07:14:25+09:00 START H4 train->validation
+2026-07-29T07:14:47+09:00 DONE H4 validation configs=408
+2026-07-29T07:14:47+09:00 PHASE DONE validation completed=5 skipped=1
+FINAL OOS unlocked: 2026/07/29  7:15:16.83
+2026-07-29T07:15:17+09:00 PHASE START final_oos
+2026-07-29T07:15:17+09:00 START M5 validation->final_oos
+2026-07-29T07:15:17+09:00 SKIP M5 no completed validation result
+2026-07-29T07:15:17+09:00 START M15 validation->final_oos
+2026-07-29T07:15:27+09:00 DONE M15 final_oos configs=9
+2026-07-29T07:15:27+09:00 START M30 validation->final_oos
+2026-07-29T07:15:39+09:00 DONE M30 final_oos configs=34
+2026-07-29T07:15:39+09:00 START H1 validation->final_oos
+2026-07-29T07:16:01+09:00 DONE H1 final_oos configs=237
+2026-07-29T07:16:01+09:00 START H2 validation->final_oos
+2026-07-29T07:16:24+09:00 DONE H2 final_oos configs=364
+2026-07-29T07:16:24+09:00 START H4 validation->final_oos
+2026-07-29T07:16:59+09:00 DONE H4 final_oos configs=212
+2026-07-29T07:16:59+09:00 PHASE DONE final_oos completed=5 skipped=1
+Finished successfully: 2026/07/29  7:16:59.68
