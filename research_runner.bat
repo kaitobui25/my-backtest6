@@ -22,7 +22,7 @@ echo ExactBT Research Runner
 echo ============================================================
 echo.
 echo [1] Chon 1 config / TRAIN - VALIDATION - FINAL OOS
-echo [2] Chon folder config va chay tat ca YAML tren TRAIN
+echo [2] Chon folder config / TRAIN - VALIDATION - FINAL OOS
 echo [0] Thoat
 echo.
 set "MODE="
